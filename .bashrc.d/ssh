@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Make sure that the SSH environment perms are correct, or warn that
+# it needs to be configured
+  if [[ -s ~/.ssh/authorized_keys ]]; then
+    chmod 700 ~/.ssh/
+    chmod 600 ~/.ssh/authorized_keys
+  else
+    echo "No SSH environment setup, please do so"
+  fi
+
+# Don't try to use a GUI ssh-askpass if there is no X
+  [[ $LOCAL_X ]] || export SSH_ASKPASS=""
+
+# Start the ssh agent if it isn't already running
+  if [[ $IS_LINUX && (-f ~/.ssh/id_rsa || -f ~/.ssh/id_dsa) ]]; then
+    if [[ ! -e "$SSH_AUTH_SOCK" ]]; then
+      eval `ssh-agent` > /dev/null
+    fi
+  # If you would also like to auto-add your ssh key when you log in,
+  # uncomment the following code:
+    #  ssh-add -l &> /dev/null
+    #  if [[ $? == 1 ]]; then
+    #    ssh-add
+    #  fi
+    #fi
+  fi

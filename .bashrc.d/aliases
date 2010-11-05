@@ -1,0 +1,35 @@
+#
+# Handy aliases
+#
+
+# Add some aliases to prevent accidental overwriting/deleting
+  alias rm='/bin/rm -i'
+  alias cp='/bin/cp -i'
+  alias mv='/bin/mv -i'
+
+# Add some ls-related aliases
+  alias ls="ls -F $LS_OPTIONS"
+  alias l="ls -F $LS_OPTIONS"
+  alias ll="clear;ls -laF $LS_OPTIONS"
+  alias llh="clear;ls -laFh $LS_OPTIONS"
+  unset LS_OPTIONS
+
+# And some program-related shortcuts
+  alias edit="$EDITOR"
+  alias less='less -R'
+  alias more='less -R'
+  alias p='nano -czw'
+  alias vi='vim'
+  alias v='vim -N'
+  alias vim='vim -N'
+  alias jedit='jedit -reuseview'
+
+# Helpful shortcuts
+  alias ff='find -type f | grep '
+  alias fd='find -type d | grep '
+  alias ffi='find -type f | grep -i '
+  alias fdi='find -type d | grep -i '
+
+# Programs I don't want to accidentally type
+  alias mf="echo 'You meant mv, right?    '"
+

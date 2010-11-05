@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#
+# CVS settings
+#
+
+# Preferred CVS_RSH (it's either ssh or rsh)
+  export CVS_RSH=ssh

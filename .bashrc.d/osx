@@ -1,0 +1,39 @@
+if [[ ! $IS_MAC ]]; then
+  return
+fi
+
+#
+#
+alias komodo='open -a "Komodo Edit.app"'
+
+########################################################################
+
+# Enable click-through in X11 windows (makes it work like *nix)
+#defaults write org.x.X11 wm_click_through -bool true
+
+# Show full pathname in finder windows
+#defaults write com.apple.finder _FXShowPosixPathInTitle -bool YES
+
+# Don't write .DS_Store files to network shares
+#defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+
+function setup_noatime_mounts {
+    cat <<EOF > /Library/LaunchDaemons/noatime.plist 
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>noatime</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>mount</string>
+      <string>-vuwo</string>
+      <string>noatime</string>
+      <string>/</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+  </dict>
+</plist>
+EOF
+    chown root:wheel /Library/LaunchDaemons/noatime.plist
+}

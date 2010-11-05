@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Set up a host based on my preferred config (ssh keys, bashrc, etc).  ssh key
+# setup taken in part from ssh-copy-id
+  function host_setup {
+    HOST="$1"
+  # The files we want to set up
+    FILES="{.bashrc,.bashrc.d,.inputrc,.vimrc,.cvsrc,.ackrc,.gitconfig}"
+  # Make sure the files are set up on this host
+    cd
+    scp -r xris@mythtv.forevermore.net:$FILES .
+  # Grab some other things that don't easily transfer with the earlier pattern
+    scp -r xris@mythtv.forevermore.net:.ssh/config ~/.ssh/config
+    scp -r xris@mythtv.forevermore.net:.subversion/config ~/.subversion/config
+    chmod 700 ~ ~/.ssh
+    chmod 600 ~/.ssh/config
+  # Send them to a new host?
+    if [[ $HOST ]]; then
+      echo "Enter password for $HOST"
+      { cat <<EOF
+# xris
+ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAp78fecgVTrYg8KtGgxArEnmr64UdVvE2Y8j7VywAP1sHlb9y0CfJ0OVS0QE4rWRMUAMSbWGj/hqvAaLccGPNFLbrjng4s7uM8kXumbSR97TKL29iCivYHqx+Cvl7VxAriT7jvcTNP6kYV13HZAgh35t1laI+hqpwZKLQ/mg4BHsn/B5eYiT9x8rBKNDgbsGlKssMa96oWvMf/ft8mr1ei3oVOFca9rARTrs6y6VoThFKAiG4p6YmXkh3WMyj/ci1VJ1Rhg5i/ml6MAGfTPMGZ1p2gF77EhKZSdFi+khECClWV+uEdrW/bvZh5anjlNb8yu65knOZ4p6mJXJ0zAdhiQ== xris@forevermore.net
+# xris marchex
+ssh-dss AAAAB3NzaC1kc3MAAACBAItzr/X2rBxh5nBNLnSjs9o4Lq89N9QrUwBlCgtjAiRY7OMKcKK2TeJ27lTMwJvNNFWn1luYwBubF6N/36eY1PcCrducig8ISq4C0/ro8VGsvHrl+l8FaXhAOQbfrNXihRb0MmdsHE1LldQf1o7JBDFIY4/xgRm+62wNKgTrOI9tAAAAFQDBmJB1YofECq3Yr0y2dTxY8vpIFQAAAIAzkUDbDOwhaWBMIIqoZKfewHYbiWWO4H0udY8IMj6/Lk6WccmRjdOAUsFnMNKAkrQ82NfEX41ovK5aDMYAx8zs1I90ZAeKI624TFsr1WMMAO1Q6j5FeSXBMUuCfE/zu8Jyun1UGHZ1GkExQCwlV7XpnI/HO2kb+dNcUbaKdVXZNwAAAIAYg69UYTTlVS4vph+E9y14ji3qzWxggIrBw2mKm14B2piUMURT3wru7MCKKQQe9L7ORIaeL+3Fk5JeVx7wlIt+NLLDDedZ+BkltKJ1D1AKYdp21LP984xArYz21osQXazt/HYAxRKwypItKzoqtAS71ixpVfBT1lfjq8Mx7Z6I0g== ccpetersen@marchex.com
+EOF
+      } | ssh "$HOST" "umask 077; test -d .ssh || mkdir .ssh ; cat > .ssh/authorized_keys" || exit 1
+      scp -r ~/$FILES "$HOST":
+      #cd -
+    fi
+  }
+
+# Update the ssh config, but make sure we don't touch this stuff more
+# than once at a time (e.g. opening gnome-terminal with multiple tabs)
+#  if [ ! -f ~/.ssh/bashrc_edit_lock ]; then
+#    touch ~/.ssh/bashrc_edit_lock
+#    /bin/rm -f ~/.ssh/config
+#    if [ "`hostname -f 2>/dev/null`" != "bumblebee.marchex.com" ]; then
+#      cat > ~/.ssh/config.$$ <<EOF
+#Host *
+#  ServerAliveInterval 60
+#  TCPKeepAlive    yes
+#  HashKnownHosts    no
+#EOF
+#    fi
+#    cat >> ~/.ssh/config.$$ <<EOF
+#Host *.forevermore.net *.schedulesdirect.org *.mythtv.org *.percdata.com indra agni web mail dns myth mythtv
+#  Port      22
+#  User      xris
+#  ForwardAgent  yes
+#Host blitzwing blitzwing.marchex.com
+#  ForwardAgent  no
+#Host *.marchex.com *.qa *.devint *.sad bumblebee blitzwing
+#  Port      22
+#  User      ccpetersen
+#  ForwardAgent  yes
+#EOF
+#    /bin/mv -f ~/.ssh/config.$$ ~/.ssh/config
+#    chmod 600 ~/.ssh/config
+#    /bin/rm -f ~/.ssh/bashrc_edit_lock
+#  fi
+

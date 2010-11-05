@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#
+# Git aliases
+#
+
+  alias gitlog='git log --decorate --name-status'
+  alias gg='git grep'
+
+
+#
+#
+#
+  git_cleanup() {
+    for branch in $(git branch -r --merged origin/master | grep '\<origin/' | grep -v '\<origin/master\>'); do
+      if [[ -z $(git rev-list $branch --since='1 month') ]]; then
+        name=$(echo $branch | sed 's/^origin\///')
+          echo git push --delete origin "$name"
+      fi
+    done
+  }
+

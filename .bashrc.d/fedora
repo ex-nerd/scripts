@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#
+# Fedora Packaging settings
+#
+
+# Make Fedora's build system go async
+  export KOJI_FLAGS="--nowait"
