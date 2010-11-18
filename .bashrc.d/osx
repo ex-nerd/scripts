@@ -2,6 +2,8 @@ if [[ ! $IS_MAC ]]; then
   return
 fi
 
+export PATH="$PATH:$HOME/Documents/android-sdk-mac_x86/tools"
+
 #
 #
 alias komodo='open -a "Komodo Edit.app"'
