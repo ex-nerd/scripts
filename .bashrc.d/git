@@ -1,9 +1,13 @@
 #!/bin/bash
 
-export GIT_PS1_SHOWDIRTYSTATE=true
-export GIT_PS1_SHOWUNTRACKEDFILES=true
+# Add these if bash_completion is running
+if [[ "`type -t __git_ps1`" -eq 'function' ]]; then
+    export GIT_PS1_SHOWDIRTYSTATE=true
+    export GIT_PS1_SHOWUNTRACKEDFILES=true
 
-export PS1="${FG_BLUE}\u${FG_CYAN}@${FGBLUE}\h${ANSI_RESET}: ${FG_GREEN}\w ${FG_DARKGRAY}\$(__git_ps1 '(%s) ')${FG_DARKGRAY}>${ANSI_RESET} "
+    export PS1="${FG_BLUE}\u${FG_CYAN}@${FGBLUE}\h${ANSI_RESET}: ${FG_GREEN}\w ${FG_DARKGRAY}\$(__git_ps1 '(%s) ')${FG_DARKGRAY}>${ANSI_RESET} "
+
+fi
 
 #
 # Git aliases
