@@ -1,5 +1,10 @@
 #!/bin/bash
 
+export GIT_PS1_SHOWDIRTYSTATE=true
+export GIT_PS1_SHOWUNTRACKEDFILES=true
+
+export PS1="${FG_BLUE}\u${FG_CYAN}@${FGBLUE}\h${ANSI_RESET}: ${FG_GREEN}\w ${FG_DARKGRAY}\$(__git_ps1 '(%s) ')${FG_DARKGRAY}>${ANSI_RESET} "
+
 #
 # Git aliases
 #
