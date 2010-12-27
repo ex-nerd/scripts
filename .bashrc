@@ -122,15 +122,6 @@
     DOMAIN=
   fi
 
-# Use gnu grep if it's available
-  if [[ $IS_SUN || $IS_MAC ]]; then
-    for APP in grep find; do
-      if which g$APP &> /dev/null; then
-        alias $APP=g$APP
-      fi
-    done
-  fi
-
 ###############################################################################
 # Define useful functions that things below depend on
 #
@@ -426,4 +417,17 @@ fi
 # And finally even more
   [[ -f ~/.bashrc_custom ]] && source ~/.bashrc_custom
 
+
+###############################################################################
+# Now that we have altered $PATH, make a few other environment-specific tweaks
+#
+
+# Use gnu utilities if they're available
+  if [[ $IS_SUN || $IS_MAC ]]; then
+    for APP in grep find tar; do
+      if which g$APP &> /dev/null; then
+        alias $APP=g$APP
+      fi
+    done
+  fi
 
