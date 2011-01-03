@@ -1,0 +1,77 @@
+#!/usr/bin/perl -w
+#Last Updated:  2/10/02
+
+
+#
+#    count - counts the number of files in a direcetory.
+#
+
+use strict;
+
+#Grab any passed-in arguments
+    my @ParseThese;
+    foreach my $arg (@ARGV) {
+        if (-e $arg) {
+            if (-d $arg) {
+                push @ParseThese, $arg;
+            }
+            else {
+                print "Not a directory:  $arg\n";
+            }
+        }
+        else {
+            print "Doesn't exist:  $arg\n";
+        }
+    }
+
+#No paths passed in?  use the current one
+    unless (@ParseThese) {
+#        print "No command specified, parsing current directory\n";
+        push @ParseThese, '.';
+    }
+#Parse!
+    foreach my $path (@ParseThese) {
+        Traverse($path);
+    }
+
+print "\n";
+
+    #####
+    ## Beware:  subroutines lurk below!
+    #####
+
+sub Traverse {
+    my $dir = shift;
+    $dir =~ s/\/$//;
+#Delete some unwanted files
+    (my $fixed = $dir) =~ s/([^\w\/.-])/\\$1/sg;
+    `rm -rf $fixed/.AppleDouble $fixed/.Trash* $fixed/Icon\r`;
+#get names of all subdirectories
+    opendir DIR, $dir or return;
+    my @files = grep(!/^\.\.?$/, readdir(DIR));
+    closedir DIR;
+#Recursion Rocks!!!!
+    $dir =~ s/^\.\///s;
+#    print "Parsing:  $dir\n";
+    my $thisdir = 0;
+    my $subdirs = 0;
+    foreach my $file (sort @files) {
+        my $path = "$dir/$file";
+        if (-d $path) {
+            $subdirs += &Traverse($path);
+            next;
+        }
+        elsif (-l $path) {
+
+        }
+        else {
+            $thisdir++;
+        }
+    }
+    print "$thisdir\t", $dir eq '.' ? "--Current--" : $dir, "\n";
+    if ($subdirs) {
+        print "$subdirs\t    in subdirs\n";
+    }
+    return $thisdir + $subdirs;
+}
+
