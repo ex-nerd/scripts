@@ -1,7 +1,0 @@
-*
-!.gitignore
-!.bashrc
-!.bashrc.d/
-!.bashrc.d/*
-!.ssh/
-!.ssh/xris*pub
