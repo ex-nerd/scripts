@@ -44,3 +44,5 @@
 [user]
 	name = Chris Petersen
 	email = geek+github@ex-nerd.com
+[merge]
+	tool = vimdiff
