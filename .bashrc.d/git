@@ -18,7 +18,11 @@ fi
 
 
 #
+# git_cleanup is intended to be attached to a git alias.
+# It will remove any remote (origin) branches that have already been merged into
+# master, and have remained untouched for at least a month.
 #
+# Credit to https://github.com/cxreg
 #
   git_cleanup() {
     for branch in $(git branch -r --merged origin/master | grep '\<origin/' | grep -v '\<origin/master\>'); do
@@ -28,4 +32,30 @@ fi
       fi
     done
   }
+  export -f git_cleanup
+
+#
+# git_only intended to be attached to a git alias.
+# Given a branch name, it will show you a log of commits that only exist on that one branch.
+#
+# Credit to https://github.com/cxreg
+#
+  function git_only() {
+    opts=$(git rev-parse --no-revs "$@" 2>/dev/null)
+    rev=$(git rev-parse --revs-only "$@" 2>/dev/null)
+    if [[ -z $rev ]]; then
+      branch=$(git name-rev --name-only HEAD)
+    else
+      branch=$rev
+    fi
+    git log $(git rev-parse --not --remotes --branches | grep -v $(git rev-parse $branch)) $branch $opts
+  }
+  export -f git_only
+
+#
+# Install our functions.  These do not auto-run because they are only needed once,
+# and in case users want to apply them only to a specific git clone.
+#
+#  git config --global alias.only '!git_only'
+#  git config --global alias.cleanup '!git_cleanup'
 
