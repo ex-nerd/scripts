@@ -27,6 +27,7 @@
 	stat = status
 	ci = commit
 	br = branch
+	branchlog = "!git log $(git rev-parse --not --branches | grep -v $(git rev-parse $1)) $1"
         f = fetch
 	co = checkout
 	df = diff
