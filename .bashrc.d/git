@@ -16,7 +16,6 @@ fi
   alias gitlog='git log --decorate --name-status'
   alias gg='git grep'
 
-
 #
 # git_cleanup is intended to be attached to a git alias.
 # It will remove any remote (origin) branches that have already been merged into
@@ -58,4 +57,7 @@ fi
 #
 #  git config --global alias.only '!git_only'
 #  git config --global alias.cleanup '!git_cleanup'
+
+
+# git config --global merge.tool vimdiff
 
