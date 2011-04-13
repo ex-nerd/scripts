@@ -10,6 +10,12 @@ alias komodo='open -a "Komodo Edit.app"'
 
 ########################################################################
 
+# Make Mail not load inline images by default
+#defaults write com.apple.mail DisableInlineAttachmentViewing -bool yes
+
+# Show stripes in finder list view
+#defaults write com.apple.finder FXListViewStripes -bool yes
+
 # Enable click-through in X11 windows (makes it work like *nix)
 #defaults write org.x.X11 wm_click_through -bool true
 
@@ -18,6 +24,16 @@ alias komodo='open -a "Komodo Edit.app"'
 
 # Don't write .DS_Store files to network shares
 #defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+
+# Show hidden items as slightly transparent in the dock
+#defaults write com.apple.Dock showhidden -bool YES
+
+# Deactivate the dashboard
+#defaults write com.apple.dashboard mcx-disabled -bool YES
+
+#http://secrets.blacktree.com/
+#http://hints.macworld.com/article.php?story=20101103055948533
+#http://www.macosxtips.co.uk/index_files/terminal-commands-for-hidden-mac-os-x-settings.html
 
 function setup_noatime_mounts {
     cat <<EOF > /Library/LaunchDaemons/noatime.plist 
