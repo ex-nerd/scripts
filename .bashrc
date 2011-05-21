@@ -369,23 +369,22 @@ if [[ $IS_MAC ]]; then
     export ACLOCAL_FLAGS="-I /sw/share/aclocal"
     export PKG_CONFIG_PATH="/sw/lib/pkgconfig"
     export MACOSX_DEPLOYMENT_TARGET=10.4
-    prepend_path PATH /sw/bin
+    prepend_path /sw/bin
     if [[ $ROOTGROUP ]]; then
-      prepend_path PATH /sw/sbin
+      prepend_path /sw/sbin
     fi
   fi
 
 # Mac Ports?
   if [[ -d /opt/local ]]; then
-    prepend_path PATH /opt/local/bin
+    prepend_path /opt/local/bin
     if [[ $ROOTGROUP ]]; then
-      prepend_path PATH /opt/local/sbin
+      prepend_path /opt/local/sbin
     fi
-    prepend_path /opt/local/sbin
     MANPATH="/opt/local/share/man:$MANPATH"
     export QTDIR=/opt/local/lib/qt3
   fi
-  append_path PATH /usr/libexec
+  append_path /usr/libexec
 
   if [[ -e /usr/bin/open-x11 ]]; then
     /usr/bin/open-x11
