@@ -40,7 +40,7 @@
 	cleanup = !git_cleanup
 	only = !git_only
 [push]
-	default = current
+	default = tracking
 [pull]
 	default = rebase
 [user]
