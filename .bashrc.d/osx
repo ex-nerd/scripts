@@ -2,13 +2,19 @@ if [[ ! $IS_MAC ]]; then
   return
 fi
 
+export PATH="$PATH:$HOME/Documents/android-sdk-mac_x86/platform-tools"
 export PATH="$PATH:$HOME/Documents/android-sdk-mac_x86/tools"
+export PATH="$PATH:$HOME/code/android-sdk-mac_x86/platform-tools"
+export PATH="$PATH:$HOME/code/android-sdk-mac_x86/tools"
 
 #
 #
 alias komodo='open -a "Komodo Edit.app"'
 
 ########################################################################
+
+# Lion:  Don't hide ~/Library
+chflags nohidden ~/Library/
 
 # Make Mail not load inline images by default
 #defaults write com.apple.mail DisableInlineAttachmentViewing -bool yes
