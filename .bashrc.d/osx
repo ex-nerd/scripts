@@ -16,6 +16,12 @@ alias komodo='open -a "Komodo Edit.app"'
 # Lion:  Don't hide ~/Library
 chflags nohidden ~/Library/
 
+# Show hidden files in the finder
+# defaults write com.apple.finder AppleShowAllFiles -bool YES
+
+# Disable Lion window animations
+# defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool NO
+
 # Make Mail not load inline images by default
 #defaults write com.apple.mail DisableInlineAttachmentViewing -bool yes
 
