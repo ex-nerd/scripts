@@ -33,7 +33,7 @@ calendar | /usr/bin/sed -e "s/ ${current_day} / ${color_day} /" -e "s/ ${current
 # END of colorcal 
 
 next_year=`date +%Y`
-next_month=$((`date +%m` + 1))
+next_month=`expr \`date +%m\` + 1`
 if [[ $next_month -gt 12 ]]; then
   next_month=1
   next_year=$(($next_year + 1))
