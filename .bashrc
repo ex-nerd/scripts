@@ -271,7 +271,7 @@
       /usr/java/*/bin/      \
       /usr/lib/courier/*bin \
       ; do
-    append_path "$dir"
+    prepend_path "$dir"
   done
 
 #
