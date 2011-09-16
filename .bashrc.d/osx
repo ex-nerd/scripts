@@ -36,7 +36,7 @@ chflags nohidden ~/Library/
 #defaults write com.apple.finder _FXShowPosixPathInTitle -bool YES
 
 # Don't write .DS_Store files to network shares
-#defaults write com.apple.desktopservices DSDontWriteNetworkStores true
+defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 
 # Show hidden items as slightly transparent in the dock
 #defaults write com.apple.Dock showhidden -bool YES
@@ -44,9 +44,13 @@ chflags nohidden ~/Library/
 # Deactivate the dashboard
 #defaults write com.apple.dashboard mcx-disabled -bool YES
 
+# Show all network machines in airdrop
+#defaults write com.apple.NetworkBrowser BrowseAllInterfaces 1
+
 #http://secrets.blacktree.com/
 #http://hints.macworld.com/article.php?story=20101103055948533
 #http://www.macosxtips.co.uk/index_files/terminal-commands-for-hidden-mac-os-x-settings.html
+#http://osxdaily.com/2011/09/09/automatically-customize-mac-os-x-with-a-bash-script-27-defaults-write-commands-custom-aliases-bash_profile-etc/
 
 function setup_noatime_mounts {
     cat <<EOF > /Library/LaunchDaemons/noatime.plist 
