@@ -58,6 +58,6 @@ fi
 #  git config --global alias.only '!git_only'
 #  git config --global alias.cleanup '!git_cleanup'
 
-
+# git config --global http.sslVerify false
 # git config --global merge.tool vimdiff
 
