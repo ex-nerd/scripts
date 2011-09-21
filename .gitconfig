@@ -47,3 +47,5 @@
 	name = Chris Petersen
 [merge]
 	tool = vimdiff
+[http]
+	sslVerify = false
