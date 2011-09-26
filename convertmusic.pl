@@ -2,6 +2,8 @@
 #
 # Convert music files from one format (ogg/mp3) to another (aac)
 #
+# Get the Nero stuff from http://www.nero.com/eng/downloads-nerodigital-nero-aac-codec.php
+#
 
 # We need some extra libraries
     use Cwd 'abs_path';
@@ -18,12 +20,13 @@
     load_mp3_genres();
 
 # Load in the commandline arguments
-    my ($destdir, $format, $aac_bitrate, $mp3_min_bitrate, $mp3_max_bitrate);
+    my ($destdir, $format, $aac_bitrate, $mp3_min_bitrate, $mp3_max_bitrate, $filter);
     GetOptions('dest|path=s'               => \$destdir,
                'format|out|type=s'         => \$format,
                'aac_bitrate=i'             => \$aac_bitrate,
                'mp3_min_bitrate|mp3_min=i' => \$mp3_min_bitrate,
-               'mp3_max_bitrate|mp3_max=i' => \$mp3_max_bitrate
+               'mp3_max_bitrate|mp3_max=i' => \$mp3_max_bitrate,
+               'filter=s' => \$filter
               );
 
 # Defaults
@@ -42,18 +45,12 @@
     die "$destdir exists but is not a directory" if (-e $destdir && ! -d $destdir);
 
 # Program checks
+# @todo make this smarter so it only cares about what we'll actually use
     foreach my $prog ('mpg321', 'lame',
                       'ogg123', 'oggenc', 'vorbiscomment',
-                      'faac') {
+                      'neroAacEnc', 'neroAacTag') {
         my $test = find_program($prog);
         die "You need $prog to continue.\n" unless ($test);
-    }
-    if ($format eq 'm4a') {
-    # Make sure that faac works
-        my $out = `faac --help 2>&1`;
-        unless ($out =~ m/Wrap AAC data in MP4 container/) {
-            die "Your copy of faac was not compiled with mp4 support.  :(\n";
-        }
     }
 
 # Make the destination directory
@@ -63,6 +60,9 @@
 
 # Default to scan the current directory
     @ARGV = ('.') unless (@ARGV);
+
+# Prep
+    $filter = qr/$filter/ if ($filter);
 
 # Process the directories passed in
     foreach my $path (@ARGV) {
@@ -84,6 +84,7 @@
     # Ignore files that we've created ourselves
         return if (substr(abs_path($path), 0, length $destdir) eq $destdir);
     # Not the kind of file we want
+        return if ($filter && $path !~ /$filter/i);
         return unless ($path =~ /\.(ogg|mp3)$/i);
     # Initialize some variables
         my (%info,
@@ -110,7 +111,17 @@
         }
         elsif ($type eq 'm4a' || $type eq 'aac') {
             $command = 'faad -o /dev/stdout '.$safe_path;
-        # No way I know of to get the tags out of these files
+            my $out = `neroAacTag -list-meta $safe_path`;
+            ($info{'track'})     = $out =~ /^\s+track = (.+)$/mi;
+            ($info{'numtracks'}) = $out =~ /^\s+totaltracks = (.+)$/mi;
+            ($info{'disknum'})   = $out =~ /^\s+disc = (.+)$/mi;
+            ($info{'numdisks'})  = $out =~ /^\s+totaldiscs = (.+)$/mi;
+            ($info{'title'})     = $out =~ /^\s+title = (.+)$/mi;
+            ($info{'artist'})    = $out =~ /^\s+artist = (.+)$/mi;
+            ($info{'album'})     = $out =~ /^\s+album = (.+)$/mi;
+            ($info{'genre'})     = $out =~ /^\s+genre = (.+)$/mi;
+            ($info{'year'})      = $out =~ /^\s+year = (\d+)$/mi;
+            ($info{'composer'})  = $out =~ /^\s+writer = (\d+)$/mi;
         }
         else {
             $command = 'mpg321 --wav /dev/stdout '.$safe_path;
@@ -145,11 +156,16 @@
         $info{'year'}     = fix_utf8($info{'year'}     or '');
         $info{'composer'} = fix_utf8($info{'composer'} or '');
         $info{'disknum'}  = fix_utf8($info{'disknum'}  or '');
-        if ($info{'track'} =~ /(\d+)\/(\d*)/) {
+        if ($info{'track'} && $info{'track'} =~ /(\d+)\/(\d*)/) {
             $info{'track'}     = $1;
             $info{'numtracks'} = $2;
         }
-        $info{'numtracks'} ||= 0;
+        $info{'numdisks'} ||= 0;
+        if ($info{'disk'} && $info{'disk'} =~ /(\d+)\/(\d*)/) {
+            $info{'disk'}     = $1;
+            $info{'numdisks'} = $2;
+        }
+        $info{'numdisks'} ||= 0;
     # Create the destination directory
         my $thisdir = clean_filename("$info{'artist'} - $info{'album'}");
         if (!-d "$destdir/$thisdir") {
@@ -167,23 +183,39 @@
         $command .= ' | ';
     # Output m4a?
         if ($format eq 'm4a') {
+            my $tmp = "/tmp/m4a_enc.$$.wav";
+            $command =~ s/ \| $/ > $tmp/;
+            print "COMMAND1:  $command\n";
+            system($command);
         # Finish the command
-            $command .= "faac -w -q 6 -b $aac_bitrate -o ".shell_safe($dest)
-                       .'     --artist '            .shell_safe($info{'artist'})
-                       .'     --title '             .shell_safe($info{'title'})
-                       .'     --genre '             .shell_safe($info{'genre'})
-                       .'     --album '             .shell_safe($info{'album'})
-                       .'     --track '             .shell_safe($info{'numtracks'} ? "$info{'track'}/$info{'numtracks'}" : $info{'track'})
-                       .'     --year '              .shell_safe($info{'year'})
-                       .'     --disc '              .shell_safe($info{'disknum'});
+            $command = "neroAacEnc -br ${aac_bitrate}000 -2pass -if $tmp -of ".shell_safe($dest);
+            print "COMMAND2:  $command\n";
+            system($command);
+            unlink $tmp;
+        # Tag the file
+            $command = 'neroAacTag '.shell_safe($dest)
+                .' -meta:track='.shell_safe($info{'track'})
+                .' -meta:totaltracks='.shell_safe($info{'numtracks'})
+                .' -meta:disc='.shell_safe($info{'disknum'})
+                .' -meta:totaldiscs='.shell_safe($info{'numdisks'})
+                .' -meta:title='.shell_safe($info{'title'})
+                .' -meta:artist='.shell_safe($info{'artist'})
+                .' -meta:album='.shell_safe($info{'album'})
+                .' -meta:genre='.shell_safe($info{'genre'})
+                .' -meta:year='.shell_safe($info{'year'})
+                .' -meta:composer='.shell_safe($info{'composer'})
+                ;
         # Found cover art?
             if ($cover) {
-                $command .= ' --cover-art '.shell_safe(resize_cover_art("$dir/$cover", "$destdir/$thisdir"));
+                $command .= ' -add-cover:front:'.shell_safe(resize_cover_art("$dir/$cover", "$destdir/$thisdir"));
             }
         # Execute the command
-            $command .= ' /dev/stdin';
-            print "COMMAND:  $command\n";
+            #$command .= ' /dev/stdin';
+            print "COMMAND3:  $command\n";
             system($command);
+        # Touch
+            open DATA, ">$destdir/$thisdir/please_reencode";
+            close DATA;
         }
     # Output mp3?
         elsif ($format eq 'mp3') {
@@ -312,6 +344,7 @@
 # Clean up a filename so that it's safe for use in Windows or MacOS
     sub clean_filename {
         my $file = (shift or '');
+        $file =~ s/^(\d+)\W+/$1 /;
         $file =~ s/(?:[\-\/\\:*?<>|]+\s*)+(?=[^\d\s])/- /sg;
         $file =~ tr/\/\\:*?<>|/-/;
         $file =~ s/^[\-\ ]+//s;
@@ -334,7 +367,7 @@
         unless (-e "$dest/cover.jpg") {
             my $safe_path = shell_safe($path);
             my $safe_dest = shell_safe("$dest/cover.jpg");
-            system("convert -geometry '256x256>' -quality 6 $safe_path jpg:$safe_dest");
+            system("convert -geometry '1024x1024>' -quality 6 $safe_path jpg:$safe_dest");
         }
     # Return
         return "$dest/cover.jpg";
