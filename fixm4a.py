@@ -39,28 +39,53 @@ tags = {
 def strip_accents(s):
    return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
 
+def fix_title(s):
+    new = s.strip()
+    new = new.replace(' MI ', ' Mi ') # typo
+    for term in ('the', 'by', 'of', 'a', 'an', 'and', 'but', 'or', 'for', 'in', 'nor', 'to', 'at', 'de', 'la', 'los', 'del', 'von', 'in', 'des', 'dem', 'der', 'di', 'with'):
+        new = re.sub(
+            r' {0} '.format(term),
+            r' {0} '.format(term),
+            new, flags=re.IGNORECASE
+            )
+        new = re.sub(
+            r'([^a-z,]) {0} '.format(term),
+            r'\1 {0} '.format(term.title()),
+            new, flags=re.IGNORECASE
+            )
+    new = new.replace(' a Minor', ' A Minor')
+    new = re.sub(r'(?:#|No\.?)(\d)', r'No. \1', new)
+    new = new.replace(u'\u2019', "'") # smart apostrophe
+    new = new.replace(u'\xb4', "'")   # some form of tilde meant to be apostrophe
+    new = re.sub(r'\s+', ' ', new)
+    new = re.sub(r'^the', 'The', new)
+    #new = new[0].upper() + new[1:]
+    return new.strip()
+
 def fix_name(s):
     new = strip_accents(s)
-    new = re.sub('\(.+\)', '', new)
-    new = re.sub('\[.+\]', '', new)
-    new = new.replace(u'\u2019', "'") # smart apostrophe
-    new = new.replace(u'\xb4', "'")   # some form of tilde
     new = new.replace(u'\xa1', '')    # upside down !
     new = new.replace(u'\xe6', 'ae')
     new = new.replace(u'\xdf', 'ss')  # eszet
     new = new.replace(u'\xa1', '')    # upside down !
     new = new.replace(u'\xbf', '')    # upside down ?
-    new = new.replace(' MI ', ' Mi ') # typo
+    new = fix_title(new)
     new = new.replace('"', '')
     new = re.sub('\s*&\s*', ' and ', new)
     new = re.sub(r'[\\/:*?<>|]+', '-', new) # characters unfriendly to win/mac
     new = re.sub(r' -(?! )', ' ', new)
     new = re.sub(r'\s+', ' ', new)
     new = re.sub(r'\W+;', ';', new)
-    new = re.sub(r'^\W+|\W+$', '', new)
+    new = re.sub(r'^[^\w\(]+|[^\w\)]+$', '', new)
     new = re.sub(r'\W+(\.\w+)$', r'\1', new)
     new = new.replace(' #!@-', ' Shit') # for one specific song
     new = re.sub(r'^(\d+)\. ', r'\1 ', new)
+    return new
+
+def fix_name_full(new):
+    new = re.sub('\(.+\)', '', new)
+    new = re.sub('\[.+\]', '', new)
+    new = fix_name(new)
     return new
 
 def load_mp4(dir, file, _disk = None):
@@ -91,28 +116,12 @@ def load_mp4(dir, file, _disk = None):
     #print m[tags['title']][0]
     title = m[tags['title']][0].strip()
     title = title.replace(',,,', ';')  # catch some oddities left over from fixing nero's tag issues
-    title = re.sub(r'\s+', ' ', title)
-    title = title.replace(' MI ', ' Mi ') # typo
-    for term in ('the', 'by', 'of', 'a', 'an', 'and', 'but', 'or', 'for', 'nor', 'to', 'at', 'de', 'la', 'los', 'del', 'von', 'in', 'des', 'dem', 'der', 'di', 'with'):
-        title = re.sub(
-            r' {0} '.format(term),
-            r' {0} '.format(term),
-            title, flags=re.IGNORECASE
-            )
-        title = re.sub(
-            r'([^a-z,]) {0} '.format(term),
-            r'\1 {0} '.format(term.title()),
-            title, flags=re.IGNORECASE
-            )
-        title = title.replace(' a Minor', ' A Minor')
-    title = re.sub(r'(?:#|No\.?)(\d)', r'No. \1', title)
-    title = title.replace(u'\u2019', "'") # smart apostrophe
-    title = title.replace(u'\xb4', "'")   # some form of tilde meant to be an apostrophe
+    title = fix_title(title)
     if title != m[tags['title']][0]:
         m[tags['title']] = [title]
         changed = True
     # Generate a new name
-    new = fix_name(u"{0} {1}.m4a".format(
+    new = fix_name_full(u"{0} {1}.m4a".format(
         str(track).zfill(max(2,len(str(numtracks)))),
         title
         ))
@@ -174,10 +183,13 @@ def visit(arg, dirname, names):
                 'mp4':     mp4,
                 'changed': changed,
                 })
-        elif not os.path.isdir(os.path.join(dirname, file)):
+        else:
             try:
                 # Clean up the name
-                new = fix_name(file.decode("utf-8"))
+                if os.path.isdir(os.path.join(dirname, file)):
+                    new = fix_name(file.decode("utf-8"))
+                else:
+                    new = fix_name_full(file.decode("utf-8"))
                 #print os.path.join(dirname, file)
                 if file.decode("utf-8") != new.decode("utf-8"):
                     print '  {0}\n    {1}'.format(file, new)
