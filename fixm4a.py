@@ -67,7 +67,7 @@ def load_mp4(dir, file, _disk = None):
     m = MP4(os.path.join(dir, file))
     changed = False
     # Don't want this taking up space
-    if m[tags['encodedby']] != ['']:
+    if m.get(tags['encodedby'], []) != ['']:
         m[tags['encodedby']] = ['']
         changed = True
     # Adjust num tracks
