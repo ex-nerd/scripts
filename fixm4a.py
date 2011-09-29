@@ -85,7 +85,7 @@ def load_mp4(dir, file, _disk = None):
     except:
         disk = numdisks = 0
     if _disk and disk != _disk:
-        print "Disknum mismatch on {0}".format(file)
+        print "  Disknum mismatch on {0}".format(file)
         sys.exit(1)
     # Clean up the title
     #print m[tags['title']][0]
@@ -124,7 +124,7 @@ def load_mp4(dir, file, _disk = None):
         if file.decode("utf-8") == new.decode("utf-8"):
             new = None
     except:
-        print "FILE:  "+os.path.join(dirname, file)
+        print "  FILE:  "+os.path.join(dirname, file)
         raise
     # Return
     return (m, new, changed)
@@ -180,10 +180,10 @@ def visit(arg, dirname, names):
                 new = fix_name(file.decode("utf-8"))
                 #print os.path.join(dirname, file)
                 if file.decode("utf-8") != new.decode("utf-8"):
-                    print '{0}\n  {1}'.format(file, new)
+                    print '  {0}\n    {1}'.format(file, new)
                     os.rename(os.path.join(dirname, file), os.path.join(dirname, new))
             except:
-                print "FILE:  "+os.path.join(dirname, file)
+                print "  FILE:  "+os.path.join(dirname, file)
                 raise
     if len(artists) > 1:
         is_comp = True
@@ -206,10 +206,10 @@ def visit(arg, dirname, names):
             changed = True
         # Save
         if changed:
-            print "Save {0}".format(file)
+            print "  Save {0}".format(file)
             mp4.save()
         if name:
-            print '{0}\n  {1}'.format(file, name)
+            print '  {0}\n    {1}'.format(file, name)
             os.rename(os.path.join(dirname, file), os.path.join(dirname, name))
 
 if 1 in sys.argv:
