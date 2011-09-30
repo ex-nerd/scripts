@@ -4,6 +4,8 @@ import os, sys, re
 from mutagen.mp4 import MP4
 import unicodedata
 
+dryrun = False
+
 tags = {
     'album': '\xa9alb',
     'albumartist': 'aART',
@@ -37,28 +39,46 @@ tags = {
     }
 
 def strip_accents(s):
-   return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
+    return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
+
+def _titlecase(m):
+    return m.group(1).title()
+
+def _lowercase(m):
+    return m.group(1).lower()
+
+def _uppercase(m):
+    return m.group(1).upper()
+
+def _musiccase(m):
+    return m.group(1).title() + m.group(2).lower()
 
 def fix_title(s):
     new = s.strip()
     new = new.replace(' MI ', ' Mi ') # typo
-    for term in ('the', 'by', 'of', 'a', 'an', 'and', 'but', 'or', 'for', 'in', 'nor', 'to', 'at', 'de', 'la', 'los', 'del', 'von', 'in', 'des', 'dem', 'der', 'di', 'with'):
+    new = re.sub(r'(?<= )(\w[a-z_-]*)(?=[ ,;.-])', _titlecase, new)
+    for term in ('the', 'by', 'of', 'a', 'an', 'and', 'e', 'y', 'et', 'le', 'as', 'na', 'por', 'para', 'el', 'on', 'but', 'or', 'for', 'in', 'from', 'nor', 'to', 'at', 'de', 'la', 'los', 'les', 'las', 'und', 'del', 'von', 'in', 'des', 'dem', 'der', 'di', 'with'):
         new = re.sub(
-            r' {0} '.format(term),
-            r' {0} '.format(term),
+            r'( {0} )'.format(term),
+            _lowercase,
             new, flags=re.IGNORECASE
             )
         new = re.sub(
-            r'([^a-z,]) {0} '.format(term),
+            r'([^a-z,1-9]+) {0} '.format(term),
             r'\1 {0} '.format(term.title()),
             new, flags=re.IGNORECASE
             )
-    new = new.replace(' a Minor', ' A Minor')
+    new = re.sub(r'(?<= )(\w)(?=[\w\.]+)$', _uppercase, new)
+    new = re.sub(r'( \w(?: (?:flat|sharp))? )((?:major|minor))', _musiccase, new, flags=re.IGNORECASE)
     new = re.sub(r'(?:#|No\.?)(\d)', r'No. \1', new)
     new = new.replace(u'\u2019', "'") # smart apostrophe
+    new = new.replace('`', "'")
     new = new.replace(u'\xb4', "'")   # some form of tilde meant to be apostrophe
     new = re.sub(r'\s+', ' ', new)
-    new = re.sub(r'^the', 'The', new)
+    new = re.sub(r'\s+,', ',', new)
+    new = re.sub(r'^the', 'The', new, flags=re.IGNORECASE)
+    new = re.sub(r'\b([xvi]+)\b', _uppercase, new, flags=re.IGNORECASE)
+    new = re.sub(r'(\d(?:rd|st|nd|th))(?= )', _lowercase, new, flags=re.IGNORECASE)
     #new = new[0].upper() + new[1:]
     return new.strip()
 
@@ -77,9 +97,12 @@ def fix_name(s):
     new = re.sub(r'\s+', ' ', new)
     new = re.sub(r'\W+;', ';', new)
     new = re.sub(r'^[^\w\(]+|[^\w\)]+$', '', new)
-    new = re.sub(r'\W+(\.\w+)$', r'\1', new)
+    new = re.sub(r'[^\w\)]*(\.\w\w+)$', _lowercase, new, flags=re.IGNORECASE)
     new = new.replace(' #!@-', ' Shit') # for one specific song
     new = re.sub(r'^(\d+)\. ', r'\1 ', new)
+    new = re.sub(r'^([\d-]+ \w)', _uppercase, new)
+    if new.endswith('.jpg'):
+        new = new.lower()
     return new
 
 def fix_name_full(new):
@@ -193,7 +216,8 @@ def visit(arg, dirname, names):
                 #print os.path.join(dirname, file)
                 if file.decode("utf-8") != new.decode("utf-8"):
                     print '  {0}\n    {1}'.format(file, new)
-                    os.rename(os.path.join(dirname, file), os.path.join(dirname, new))
+                    if not dryrun:
+                        os.rename(os.path.join(dirname, file), os.path.join(dirname, new))
             except:
                 print "  FILE:  "+os.path.join(dirname, file)
                 raise
@@ -219,12 +243,14 @@ def visit(arg, dirname, names):
         # Save
         if changed:
             print "  Save {0}".format(file)
-            mp4.save()
+            if not dryrun:
+                mp4.save()
         if name:
             print '  {0}\n    {1}'.format(file, name)
-            os.rename(os.path.join(dirname, file), os.path.join(dirname, name))
+            if not dryrun:
+                os.rename(os.path.join(dirname, file), os.path.join(dirname, name))
 
-if 1 in sys.argv:
+if len(sys.argv) > 1:
     path = os.path.abspath(sys.argv[1])
 else:
     path = os.path.abspath('.')
