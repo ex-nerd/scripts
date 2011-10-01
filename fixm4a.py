@@ -77,6 +77,7 @@ t3 = {
     'arranger':           'TPE4',
     'disk':               'TPOS',
     'producednotice':     'TPRO',
+    'partofcompilation':  'TCMP',
     'organization':       'TPUB',
     'track':              'TRCK',
     'recordingdates':     'TRDA',
@@ -174,11 +175,11 @@ def fix_name_full(new):
 
 def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
     m = MP4(os.path.join(dir, file))
-    changed = False
+    changed = []
     # Don't want this taking up space
     if m.get(t4['encodedby'], []) != ['']:
         m[t4['encodedby']] = ['']
-        changed = True
+        changed.append('encodedby')
     # Adjust num tracks
     try:
         (track, numtracks) = m['trkn'][0]
@@ -188,7 +189,7 @@ def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
         if _numtracks:
             numtracks = _numtracks
             m['trkn'] = [(track,numtracks)]
-            changed = True
+            changed.append('trkn')
         else:
             print "  no numtracks for {0}".format(file)
             sys.exit(1)
@@ -201,7 +202,7 @@ def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
         disk     = _disk
         numdisks = _numdisks
         m['disk'] = [(disk,numdisks)]
-        changed = True
+        changed.append('disk')
     elif _disk and disk != _disk:
         print "  Disknum mismatch {0} != {1} on {2}".format(disk, _disk, file)
         sys.exit(1)
@@ -212,7 +213,7 @@ def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
     album = fix_album(m[t4['album']][0].strip())
     if album != m[t4['album']][0]:
         m[t4['album']] = [album]
-        changed = True
+        changed.append('album')
     # Clean up the title
     #print m[t4['title']][0]
     title = m[t4['title']][0].strip()
@@ -220,8 +221,7 @@ def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
     title = fix_title(title)
     if title != m[t4['title']][0]:
         m[t4['title']] = [title]
-        print 'title'
-        changed = True
+        changed.append('title')
     # Generate a new name
     new = fix_name_full(u"{0} {1}.m4a".format(
         str(track).zfill(max(2,len(str(numtracks)))),
@@ -242,11 +242,11 @@ def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
 
 def load_mp3(dir, file, _numtracks = None, _disk = None, _numdisks = None):
     m = id3.ID3(os.path.join(dir, file))
-    changed = False
+    changed = []
     # Don't want this taking up space
     if t3['encodedby'] in m:
         del(m[t3['encodedby']])
-        changed = True
+        changed.append('encodedby')
     # Adjust num tracks
     try:
         numtracks = 0
@@ -259,7 +259,7 @@ def load_mp3(dir, file, _numtracks = None, _disk = None, _numdisks = None):
         if _numtracks:
             numtracks = _numtracks
             m[t3['track']] = id3.TRCK(0, '{0}/{1}'.format(track,numtracks))
-            changed = True
+            changed.append('track')
         else:
             print "  no numtracks for {0}".format(file)
             sys.exit(1)
@@ -275,7 +275,7 @@ def load_mp3(dir, file, _numtracks = None, _disk = None, _numdisks = None):
         disk     = str(_disk).zfill(len(str(_numdisks)))
         numdisks = _numdisks
         m[t3['disk']] = id3.TPOS(0, '{0}/{1}'.format(disk,numdisks))
-        changed = True
+        changed.append('disk')
     elif _disk and disk != _disk:
         print "  Disknum mismatch {0} != {1} on {2}".format(disk, _disk, file)
         sys.exit(1)
@@ -284,7 +284,7 @@ def load_mp3(dir, file, _numtracks = None, _disk = None, _numdisks = None):
             disk     = str(disk).zfill(len(str(_numdisks)))
             numdisks = _numdisks
             m[t3['disk']] = id3.TPOS(0, '{0}/{1}'.format(disk,numdisks))
-            changed = True
+            changed.append('disk')
         else:
             print "  disknum but no numdisks on {0}".format(file)
             sys.exit(1)
@@ -293,14 +293,14 @@ def load_mp3(dir, file, _numtracks = None, _disk = None, _numdisks = None):
         album = fix_album(m[t3['album']].text[0].strip())
         if album != m[t3['album']].text[0]:
             m[t3['album']].text[0] = album
-            changed = True
+            changed.append('album')
     # Clean up the title
     #print m[t3['title']].text[0]
     title = m[t3['title']].text[0].strip()
     title = fix_title(title)
     if title != m[t3['title']].text[0]:
         m[t3['title']].text = [title]
-        changed = True
+        changed.append('title')
     # Generate a new name
     new = fix_name_full(u"{0} {1}.mp3".format(
         str(track).zfill(max(2,len(str(numtracks)))),
@@ -432,23 +432,29 @@ def visit(arg, dirname, names):
             m = group['mp4']
             # Compilation?
             compilation = m.get(t4['partofcompilation'])
-            if not compilation and is_comp:
+            if is_comp and not compilation:
+                compilation = True
                 m[t4['partofcompilation']] = True
-                changed = True
+                changed.append('partofcompilation')
             a_artist = m.get(t4['albumartist'], [None])[0]
             if compilation and not a_artist:
                 m[t4['albumartist']] = ['Various']
-                changed = True
+                changed.append('albumartist')
         elif 'mp3' in group:
             m = group['mp3']
             # Compilation?
-            if is_comp:
-                if not t3['albumartist'] in m or not m[t3['albumartist']].text[0]:
-                    m[t3['albumartist']] = id3.TPE2(0, 'Various')
-                    changed = True
+            compilation = None
+            if t3['partofcompilation'] in m:
+                compilation = m[t3['partofcompilation']].text[0]
+            if is_comp and not compilation:
+                m[t3['partofcompilation']] = id3.TCMP(0, '1')
+                changed.append('partofcompilation')
+            if compilation and not (t3['albumartist'] in m and m[t3['albumartist']].text[0]):
+                m[t3['albumartist']] = id3.TPE2(0, 'Various')
+                changed.append('albumartist')
         # Save
-        if changed:
-            print "  Save {0}".format(file)
+        if changed and len(changed) > 0:
+            print "  Save {0}\n    {1}".format(file, ','.join(changed))
             if not dryrun:
                 m.save()
         if name:
