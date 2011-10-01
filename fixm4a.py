@@ -7,7 +7,7 @@
 #
 
 # Set to true for test mode
-dryrun = False
+dryrun = True
 
 import os, sys, re
 import unicodedata
