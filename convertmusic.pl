@@ -32,7 +32,7 @@
 # Defaults
     $format          ||= 'm4a';
     $destdir         ||= $format.'_out';
-    $aac_bitrate     ||= 192;
+    $aac_bitrate     ||= 160;
     $mp3_min_bitrate ||= 96;
     $mp3_max_bitrate ||= 320;
 
@@ -156,13 +156,13 @@
         $info{'year'}     = fix_utf8($info{'year'}     or '');
         $info{'composer'} = fix_utf8($info{'composer'} or '');
         $info{'disknum'}  = fix_utf8($info{'disknum'}  or '');
-        if ($info{'track'} && $info{'track'} =~ /(\d+)\/(\d*)/) {
+        if ($info{'track'} && $info{'track'} =~ /^(\d+)\/(\d*)$/) {
             $info{'track'}     = $1;
             $info{'numtracks'} = $2;
         }
         $info{'numdisks'} ||= 0;
-        if ($info{'disk'} && $info{'disk'} =~ /(\d+)\/(\d*)/) {
-            $info{'disk'}     = $1;
+        if ($info{'disknum'} && $info{'disknum'} =~ /^(\d+)\/(\d*)$/) {
+            $info{'disknum'}  = $1;
             $info{'numdisks'} = $2;
         }
         $info{'numdisks'} ||= 0;
@@ -170,6 +170,12 @@
         my $thisdir = clean_filename("$info{'artist'} - $info{'album'}");
         if (!-d "$destdir/$thisdir") {
             mkdir "$destdir/$thisdir" or die "Can't create $destdir/$thisdir:  $!\n";
+        }
+        if ($info{'numdisks'} && $info{'numdisks'} > 1 && $info{'disknum'}) {
+            $thisdir .= "/Disk $info{'disknum'}";
+            if (!-d "$destdir/$thisdir") {
+                mkdir "$destdir/$thisdir" or die "Can't create $destdir/$thisdir:  $!\n";
+            }
         }
     # Get a new name
         my $dest = "$destdir/$thisdir/".clean_filename($file);
@@ -214,7 +220,7 @@
             print "COMMAND3:  $command\n";
             system($command);
         # Touch
-            open DATA, ">$destdir/$thisdir/please_reencode";
+            open DATA, ">$destdir/$thisdir/please_rerip";
             close DATA;
         }
     # Output mp3?
@@ -296,6 +302,10 @@
             print OGG $data;
             close OGG;
         }
+    # Size check
+        if (-s $path < -s $dest) {
+            #die "Bitrate needs adjustment downward:  ".(-s $path).' < '.(-s $dest)."\n";
+        }
     }
 
 # Done!
@@ -346,7 +356,8 @@
         my $file = (shift or '');
         $file =~ s/^(\d+)\W+/$1 /;
         $file =~ s/(?:[\-\/\\:*?<>|]+\s*)+(?=[^\d\s])/- /sg;
-        $file =~ tr/\/\\:*?<>|/-/;
+        $file =~ tr/!?//d;
+        $file =~ tr/\/\\:*<>|/-/;
         $file =~ s/^[\-\ ]+//s;
         $file =~ s/[\-\ ]+$//s;
         return $file;
