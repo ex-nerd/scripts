@@ -110,8 +110,8 @@ def _musiccase(m):
 def fix_album(s):
     s = re.sub(r'\W+Dis[kc]\s+([AB]|\d+)\W*$', '', s)
     s = re.sub(r'\W+cd\s*\d+\W*$', '', s, flags=re.IGNORECASE)
-    #if re.match(r'Dis[kc]', s) or re.match(r'cd\s*\d', s, flags=re.IGNORECASE):
-    #    print "  WARNING:  {0}".format(s)
+    if re.search(r'Dis[kc]\b', s, flags=re.IGNORECASE) or re.search(r'cd\s*\d', s, flags=re.IGNORECASE):
+        print "  WARNING, album with disk in name: {0}".format(s)
     return s
 
 def fix_title(s):
@@ -211,7 +211,7 @@ def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
     # Clean up the album name
     album = fix_album(m[t4['album']][0].strip())
     if album != m[t4['album']][0]:
-        m[t3['album']] = [album]
+        m[t4['album']] = [album]
         changed = True
     # Clean up the title
     #print m[t4['title']][0]
@@ -220,6 +220,7 @@ def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
     title = fix_title(title)
     if title != m[t4['title']][0]:
         m[t4['title']] = [title]
+        print 'title'
         changed = True
     # Generate a new name
     new = fix_name_full(u"{0} {1}.m4a".format(
@@ -323,7 +324,7 @@ def visit(arg, dirname, names):
     # Do some math/checking for disk number info
     parent = os.path.dirname(dirname)
     thisdir = os.path.basename(dirname)
-    m = re.match(r'Disk ([AB]|\d+)\b', thisdir)
+    m = re.search(r'Disk ([AB]|\d+)\b', thisdir)
     disknum  = 0
     numdisks = 0
     if m:
@@ -335,7 +336,7 @@ def visit(arg, dirname, names):
         for dir in os.listdir(parent):
             if not os.path.isdir(os.path.join(parent, dir)):
                 continue
-            m = re.match(r'Dis[ck]\s+([A-D]|\d+)\b', dir)
+            m = re.search(r'Dis[ck]\s+([A-D]|\d+)\b', dir)
             if m:
                 d = m.group(1)
                 if d == 'A':
