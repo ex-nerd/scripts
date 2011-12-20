@@ -32,7 +32,7 @@
 # Defaults
     $format          ||= 'm4a';
     $destdir         ||= $format.'_out';
-    $aac_bitrate     ||= 160;
+    $aac_bitrate     ||= 192;
     $mp3_min_bitrate ||= 96;
     $mp3_max_bitrate ||= 320;
 
@@ -48,6 +48,7 @@
 # @todo make this smarter so it only cares about what we'll actually use
     foreach my $prog ('mpg321', 'lame',
                       'ogg123', 'oggenc', 'vorbiscomment',
+                      'flac',
                       'neroAacEnc', 'neroAacTag') {
         my $test = find_program($prog);
         die "You need $prog to continue.\n" unless ($test);
@@ -85,7 +86,7 @@
         return if (substr(abs_path($path), 0, length $destdir) eq $destdir);
     # Not the kind of file we want
         return if ($filter && $path !~ /$filter/i);
-        return unless ($path =~ /\.(ogg|mp3)$/i);
+        return unless ($path =~ /\.(ogg|mp3|flac)$/i);
     # Initialize some variables
         my (%info,
             $ignore,
@@ -122,6 +123,18 @@
             ($info{'genre'})     = $out =~ /^\s+genre = (.+)$/mi;
             ($info{'year'})      = $out =~ /^\s+year = (\d+)$/mi;
             ($info{'composer'})  = $out =~ /^\s+writer = (\d+)$/mi;
+        }
+        elsif ($type eq 'flac') {
+            $command = 'flac -d -c '.$safe_path;
+            my $out = `metaflac --export-tags-to=- $safe_path`;
+            ($info{'track'})       = $out =~ /^\s*tracknumber=(.+)$/mi;
+            ($info{'disknum'})     = $out =~ /^\s*discnumber=(.+)$/mi;
+            ($info{'numdisks'})    = $out =~ /^\s*totaldiscs=(.+)$/mi;
+            ($info{'title'})       = $out =~ /^\s*title=(.+)$/mi;
+            ($info{'artist'})      = $out =~ /^\s*artist=(.+)$/mi;
+            ($info{'album'})       = $out =~ /^\s*album=(.+)$/mi;
+            ($info{'genre'})       = $out =~ /^\s*genre=(.+)$/mi;
+            ($info{'year'})        = $out =~ /^\s*date=(\d+)$/mi;
         }
         else {
             $command = 'mpg321 --wav /dev/stdout '.$safe_path;
