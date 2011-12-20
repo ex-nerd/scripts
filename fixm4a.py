@@ -203,7 +203,7 @@ def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
         numdisks = _numdisks
         m['disk'] = [(disk,numdisks)]
         changed.append('disk')
-    elif _disk and disk != _disk:
+    elif _disk and str(disk) != '0' and disk != _disk:
         print "  Disknum mismatch {0} != {1} on {2}".format(disk, _disk, file)
         sys.exit(1)
     elif disk and not numdisks:
@@ -276,7 +276,7 @@ def load_mp3(dir, file, _numtracks = None, _disk = None, _numdisks = None):
         numdisks = _numdisks
         m[t3['disk']] = id3.TPOS(0, '{0}/{1}'.format(disk,numdisks))
         changed.append('disk')
-    elif _disk and disk != _disk:
+    elif _disk and str(disk) != '0' and disk != _disk:
         print "  Disknum mismatch {0} != {1} on {2}".format(disk, _disk, file)
         sys.exit(1)
     elif int(disk) and not int(numdisks):
@@ -296,10 +296,14 @@ def load_mp3(dir, file, _numtracks = None, _disk = None, _numdisks = None):
             changed.append('album')
     # Clean up the title
     #print m[t3['title']].text[0]
-    title = m[t3['title']].text[0].strip()
-    title = fix_title(title)
-    if title != m[t3['title']].text[0]:
-        m[t3['title']].text = [title]
+    if t3['title'] in m:
+        title = m[t3['title']].text[0].strip()
+        title = fix_title(title)
+        if title != m[t3['title']].text[0]:
+            m[t3['title']].text = [title]
+            changed.append('title')
+    else:
+        title = ''
         changed.append('title')
     # Generate a new name
     new = fix_name_full(u"{0} {1}.mp3".format(
@@ -324,7 +328,7 @@ def visit(arg, dirname, names):
     # Do some math/checking for disk number info
     parent = os.path.dirname(dirname)
     thisdir = os.path.basename(dirname)
-    m = re.search(r'Disk ([AB]|\d+)\b', thisdir)
+    m = re.search(r'(?:cd|dis[ck])\s+([AB]|\d+)\b', thisdir, flags=re.IGNORECASE)
     disknum  = 0
     numdisks = 0
     if m:
@@ -333,16 +337,20 @@ def visit(arg, dirname, names):
             disknum = 1
         elif disknum == 'B':
             disknum = 2
+        else:
+            disknum = int(disknum)
         for dir in os.listdir(parent):
             if not os.path.isdir(os.path.join(parent, dir)):
                 continue
-            m = re.search(r'Dis[ck]\s+([A-D]|\d+)\b', dir)
+            m = re.search(r'(?:cd|dis[ck])\s+([AB]|\d+)\b', dir, flags=re.IGNORECASE)
             if m:
                 d = m.group(1)
                 if d == 'A':
                     d = 1
                 elif d == 'B':
                     d = 2
+                else:
+                    d = int(d)
                 numdisks = max(numdisks, d)
     # Parse the files
     mp3 = []
@@ -404,7 +412,7 @@ def visit(arg, dirname, names):
             if artist:
                 if t3['artist'] in mp3 and artist != mp3[t3['artist']].text[0]:
                     is_comp = True
-            else:
+            elif t3['artist'] in mp3:
                 artist = mp3[t3['artist']].text[0]
                 if artist.lower() == 'various':
                     is_comp = True
