@@ -203,7 +203,7 @@ def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
         numdisks = _numdisks
         m['disk'] = [(disk,numdisks)]
         changed.append('disk')
-    elif _disk and str(disk) != '0' and disk != _disk:
+    elif str(_disk) != '0' and str(disk) != '0' and str(disk) != str(_disk):
         print "  Disknum mismatch {0} != {1} on {2}".format(disk, _disk, file)
         sys.exit(1)
     elif disk and not numdisks:
@@ -276,7 +276,7 @@ def load_mp3(dir, file, _numtracks = None, _disk = None, _numdisks = None):
         numdisks = _numdisks
         m[t3['disk']] = id3.TPOS(0, '{0}/{1}'.format(disk,numdisks))
         changed.append('disk')
-    elif _disk and str(disk) != '0' and disk != _disk:
+    elif str(_disk) != '0' and str(disk) != '0' and str(disk) != str(_disk):
         print "  Disknum mismatch {0} != {1} on {2}".format(disk, _disk, file)
         sys.exit(1)
     elif int(disk) and not int(numdisks):
