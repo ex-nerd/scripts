@@ -198,6 +198,10 @@ def load_mp4(dir, file, _numtracks = None, _disk = None, _numdisks = None):
         (disk, numdisks) = m['disk'][0]
     except:
         disk = numdisks = 0
+    # Use this bit to force num_disks
+    # @todo detect numdisks
+    #_disk = disk
+    #_numdisks = 0
     if _disk and _numdisks and not disk and not numdisks:
         disk     = _disk
         numdisks = _numdisks
