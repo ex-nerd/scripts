@@ -1,8 +1,19 @@
 #!/usr/bin/python
 #
 
+# Force build, regardless of meta data
+force = True
+
+# Group by disk numbers?
+group_by_disk = False
+
 # Max length (in seconds) for each segment
-max_length = 60 * 60 * 12
+max_length = 60 * 60 * 14
+max_length = None
+
+# Maximum size (in megabytes) for each segment
+max_size = 700
+max_size = None
 
 ###############################################################################
 
@@ -44,7 +55,7 @@ t4 = {
     }
 
 def newburn():
-    return { 'chapters': '', 'tracks': [], 'tlen': 0.0, 'disknum': 0, 'tmin': None, 'tmax': None }
+    return { 'chapters': '', 'tracks': [], 'tlen': 0.0, 'tsize': 0.0, 'disknum': 0, 'tmin': None, 'tmax': None }
 
 def timestr(secs):
     (secs, ms) = str(secs).split('.')
@@ -78,12 +89,14 @@ def encode(title, burn, meta):
     # Create the chapters file, chapterize, cleanup
     with open(chapterfile , 'w') as file:
         file.write(burn['chapters'])
-    subprocess.call(['mp4chaps', '--chapter-qt', '--import', outfile])
+    subprocess.call(['mp4chaps', '--import', outfile])
     os.unlink(chapterfile)
     # Add a cover image?
-    if os.path.exists('cover.jpg'):
+    if os.path.exists(burn['cover']):
         subprocess.call(['mp4art', '--remove', outfile])
-        subprocess.call(['mp4art', '--add', 'cover.jpg', outfile])
+        subprocess.call(['mp4art', '--add', burn['cover'], outfile])
+    # chmod (os.chmod() feels messy)
+    subprocess.call(['chmod', '644', outfile])
 
 if __name__ == '__main__':
     if len(sys.argv) > 1:
@@ -93,32 +106,49 @@ if __name__ == '__main__':
     print path
     os.chdir(path)
     # Load the files
-    files = [filename for filename in os.listdir(".") if filename.endswith(".m4a")]
+    files = [filename for filename in os.listdir(".") if filename.endswith(".m4a") or filename.endswith(".m4b")]
     files.sort()
     # Init
-    burns = []
-    burn = newburn()
-    meta = {}
-    chapters = ''
+    burns      = []
+    burn       = newburn()
+    meta       = {}
+    chapters   = ''
+    num_tracks = 0;
     for file in files:
         m = MP4(file)
         # Title, for the chapter name
+        #print file
         title = m[t4['title']][0].strip()
         # Disk number
         try:
             (disknum, numdisks) = m['disk'][0]
         except:
             disknum = numdisks = 0
-        if burn['disknum'] and burn['disknum'] != disknum:
+        if group_by_disk and burn['disknum'] and burn['disknum'] != disknum:
             burns.append(burn)
             burn = newburn()
         burn['disknum'] = disknum
+        # Need cover art?
+        cover_name = 'cover_{0}.jpg'.format(disknum)
+        if not os.path.exists(cover_name) and m.get('covr'):
+            if len(m['covr'][0]) > 0:
+                with open(cover_name, 'wb') as file:
+                    file.write(m['covr'][0])
+        if os.path.exists(cover_name):
+            burn['cover'] = cover_name
+        else:
+            burn['cover'] = 'cover.jpg'
         # Track number
-        (tracknum, numtracks) = m['trkn'][0]
+        try:
+            (tracknum, numtracks) = m['trkn'][0]
+        except:
+            tracknum = numtracks = 0
         if burn['tmin'] == None or int(tracknum) <= int(burn['tmin']):
             burn['tmin'] = tracknum
         if burn['tmax'] == None or int(tracknum) >= int(burn['tmax']):
             burn['tmax'] = tracknum
+        if numtracks > num_tracks:
+            num_tracks = numtracks
         # Other info
         track = {
             'artist':    m.get(t4['artist'],   [''])[0].strip(),
@@ -132,18 +162,20 @@ if __name__ == '__main__':
         }
         # Compare with all-album meta
         for key in ('artist', 'album', 'comment', 'grouping', 'year', 'numdisks', 'numtracks'):
-            if key in meta:
+            if not force and key in meta:
                 if track[key] != meta[key]:
-                    raise ValueError('Album Mismatch:  {0} != {1}'.format(track[key], meta[key]))
+                    raise ValueError('{0} Mismatch:  {1} != {2}'.format(key, track[key], meta[key]))
             else:
                 meta[key] = track[key]
         # Length and chapter info
         burn['chapters'] += '{0} {1}\n'.format(timestr(burn['tlen']), title)
         burn['tlen'] += m.info.length
+        # Keep track of file size
+        burn['tsize'] += os.path.getsize(file) / (1024 * 1024)
         # Add the file
         burn['tracks'].append(file)
         # Long enough to break out a chunk?
-        if int(meta.get('numdisks', 0)) < 1 and burn['tlen'] >= max_length:
+        if (max_length and burn['tlen'] >= max_length) or (max_size and burn['tsize'] >= max_size):
             burns.append(burn)
             burn = newburn()
     if len(burn['tracks']) > 0:
@@ -152,10 +184,19 @@ if __name__ == '__main__':
     for burn in burns:
         if len(burns) == 1:
             title = meta['album']
-        elif meta['numdisks']:
-            title = "{0} - Disk {1} of {2}".format(meta['album'], burn['disknum'], meta['numdisks'])
+        elif group_by_disk and meta['numdisks']:
+            title = "{0} - Disk {1} of {2}".format(
+                meta['album'],
+                str(burn['disknum']).zfill(len(str(meta['numdisks']))),
+                meta['numdisks']
+                )
         else:
-            title = "{0} - {1}-{2} of {3}".format(meta['album'], burn['tmin'], burn['tmax'], meta['numtracks'])
+            title = "{0} - {1}-{2} of {3}".format(
+                meta['album'],
+                str(burn['tmin']).zfill(max(2,len(str(num_tracks)))),
+                str(burn['tmax']).zfill(max(2,len(str(num_tracks)))),
+                meta['numtracks']
+                )
         #print ''
         #print burn
         encode(title, burn, meta)
