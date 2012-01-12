@@ -1,4 +1,4 @@
 function ds_delete() {
     find -name .DS_Store -exec rm {} \+
-    find -name ._\* -exec rm {} \+
+    find -not -name '*.svn*' -and -name ._\* -exec rm {} \+
 }
