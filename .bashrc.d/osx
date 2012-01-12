@@ -12,6 +12,10 @@ export PATH="$PATH:$HOME/code/android-sdk-mac_x86/tools"
 alias komodo='open -a "Komodo Edit.app"'
 alias chrome='open -a "Google Chrome.app"'
 
+#
+#
+alias macsleep='osascript -e '\''tell application "System Events" to sleep'\'''
+
 ########################################################################
 
 # Lion:  Don't hide ~/Library
