@@ -39,6 +39,7 @@
         wheres=branch -a --contains
 	cleanup = !git_cleanup
 	only = !git_only
+	gpush = push origin HEAD:refs/for/master
 [push]
 	default = tracking
 [pull]
