@@ -21,6 +21,12 @@ filetype indent on
 "
 if has("autocmd")
 
+    " Remove all (previous) autocommands for the current group.
+    " autocmd!
+
+    " TXT file type isn't always getting detected so handle it explicitly
+    autocmd BufNewFile,BufRead *.txt set filetype=txt
+
     "
     "  Modify options for files I might be editing often:
     "
@@ -34,6 +40,9 @@ if has("autocmd")
         \ set autoindent        |
         \ set smarttab          |
         \ set shiftwidth=4
+
+    autocmd FileType c,html,perl,php,sh,txt
+        \ autocmd BufWritePre <buffer> :%s/\s\+$//e
 
 endif
 
