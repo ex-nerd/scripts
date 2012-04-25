@@ -11,6 +11,7 @@ export PATH="$PATH:$HOME/code/android-sdk-mac_x86/tools"
 #
 alias komodo='open -a "Komodo Edit.app"'
 alias chrome='open -a "Google Chrome.app"'
+alias eclipse='open -a "Eclipse.app"'
 
 #
 #
