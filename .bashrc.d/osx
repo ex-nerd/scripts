@@ -17,6 +17,13 @@ alias eclipse='open -a "Eclipse.app"'
 #
 alias macsleep='osascript -e '\''tell application "System Events" to sleep'\'''
 
+
+# Macports setup:
+# sudo port install git-core +svn+bash_completion
+
+# Fix after XCode 4.3 install:
+# sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+
 ########################################################################
 
 # Lion:  Don't hide ~/Library
