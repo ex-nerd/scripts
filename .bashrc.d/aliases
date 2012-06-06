@@ -22,7 +22,6 @@
   alias vi='vim'
   alias v='vim -N'
   alias vim='vim -N'
-  alias jedit='jedit -reuseview'
 
 # Helpful shortcuts
   alias ff='find -type f | grep '
@@ -32,4 +31,7 @@
 
 # Programs I don't want to accidentally type
   alias mf="echo 'You meant mv, right?    '"
+
+# Dropbox
+  alias clean_dropbox="find ~/Dropbox -name '* conflicted copy *' -exec rm {} \+"
 
