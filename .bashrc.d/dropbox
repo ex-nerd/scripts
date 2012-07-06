@@ -1,0 +1,3 @@
+
+alias clean_dropbox="find ~/Dropbox -name '* conflicted copy *' -exec rm {} \+"
+
