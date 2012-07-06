@@ -61,6 +61,9 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 # Show all network machines in airdrop
 #defaults write com.apple.NetworkBrowser BrowseAllInterfaces 1
 
+# Disable auto-save and re-enable save-as in TextEdit
+# defaults write com.apple.TextEdit ApplePersistence -bool no
+
 #http://secrets.blacktree.com/
 #http://hints.macworld.com/article.php?story=20101103055948533
 #http://www.macosxtips.co.uk/index_files/terminal-commands-for-hidden-mac-os-x-settings.html
