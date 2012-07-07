@@ -43,6 +43,9 @@ chflags nohidden ~/Library/
 # Show stripes in finder list view
 #defaults write com.apple.finder FXListViewStripes -bool yes
 
+# Default to list view
+defaults write com.apple.Finder FXPreferredViewStyle Nlsv
+
 # Enable click-through in X11 windows (makes it work like *nix)
 #defaults write org.x.X11 wm_click_through -bool true
 
