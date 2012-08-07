@@ -34,6 +34,9 @@ chflags nohidden ~/Library/
 # Show hidden files in the finder
 # defaults write com.apple.finder AppleShowAllFiles -bool YES
 
+# Allow iMovie to read network drives
+#defaults write -app iMovie allowNV -bool true
+
 # Disable Lion window animations
 # defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool NO
 
