@@ -34,7 +34,7 @@
 # is rsync (in case rsync itself is stored somewhere like /usr/local/bin).
 
   if [[ "$-" != *i* ]]; then
-    for dir in /usr/*/bin/ /opt/*/bin/; do
+    for dir in /usr/*/bin/ /usr/local/*/bin/ /opt/*/bin/; do
       export PATH="$PATH:$dir"
     done
     return
