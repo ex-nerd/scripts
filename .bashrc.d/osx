@@ -31,6 +31,9 @@ alias macsleep='osascript -e '\''tell application "System Events" to sleep'\'''
 # Lion:  Don't hide ~/Library
 chflags nohidden ~/Library/
 
+# Check for updates once/week
+# sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate ScheduleFrequency 1
+
 # Show hidden files in the finder
 # defaults write com.apple.finder AppleShowAllFiles -bool YES
 
