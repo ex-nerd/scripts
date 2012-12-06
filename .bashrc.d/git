@@ -1,10 +1,14 @@
 #!/bin/bash
 
+# Deal with macports/git splitting out the git-prompt utils into their own file
+if [ -f /opt/local/share/git-core/git-prompt.sh ]; then
+      . /opt/local/share/git-core/git-prompt.sh
+fi
+
 # Add these if bash_completion is running
 if [[ $EUID > 0 && "`type -t __git_ps1`" == 'function' ]]; then
     export GIT_PS1_SHOWDIRTYSTATE=true
     export GIT_PS1_SHOWUNTRACKEDFILES=true
-
     export PS1="${FG_BLUE}\u${FG_CYAN}@${FGBLUE}\h${ANSI_RESET}: ${FG_GREEN}\w ${FG_DARKGRAY}\$(__git_ps1 '(%s) ')${FG_DARKGRAY}>${ANSI_RESET} "
 
 fi
