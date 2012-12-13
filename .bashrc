@@ -20,6 +20,10 @@
 # ~/.bashrc.d/"$LOCATION".loc
 #   This is intended for separating "home" and "work" settings.  $LOCATION is
 #   the main domain "word" for this host, i.e. example.loc for example.com.
+#   Included when at $LOCATION.
+#
+# ~/.bashrc.d/"$LOCATION".notloc
+#   Like *.loc but only included when not at $LOCATION.
 #
 # ~/.bashrc_custom
 #   This behaves like the files in ~/.bashrc.d, but is intended for custom
@@ -34,7 +38,7 @@
 # is rsync (in case rsync itself is stored somewhere like /usr/local/bin).
 
   if [[ "$-" != *i* ]]; then
-    for dir in /usr/*/bin/ /usr/local/*/bin/ /opt/*/bin/; do
+    for dir in /usr/*/bin/ /opt/*/bin/; do
       export PATH="$PATH:$dir"
     done
     return
@@ -400,22 +404,28 @@ fi
 # Execute any environment-specific bashrc files
 #
 
+# Get the location (useful for home vs. work separation)
+  LOCATION=`echo "$DOMAIN" | awk -F. '{ print $1 }'`
+
 # Load any custom extensions
   if [[ -d ~/.bashrc.d ]]; then
     for file in ~/.bashrc.d/*; do
-      if [[ ${file:$((${#file}-4)):4} != '.loc' ]]; then
+      if [[ ${file:$((${#file}-4)):4} == '.loc' ]]; then
+        if [[ $file == $/.bashrc.d/"$LOCATION".loc ]]; then
+          source "$file"
+        fi
+      elif [[ ${file:$((${#file}-7)):7} == '.notloc' ]]; then
+        if [[ $file != $/.bashrc.d/"$LOCATION".notloc ]]; then
+          source "$file"
+        fi
+      else
         source "$file"
       fi
     done
   fi
 
-# And location (useful for home vs. work separation)
-  LOCATION=`echo "$DOMAIN" | awk -F. '{ print $1 }'`
-  [[ -f ~/.bashrc.d/"$LOCATION".loc ]] && source ~/.bashrc.d/"$LOCATION".loc
-
-# And finally even more
+# And finally even more, just in case
   [[ -f ~/.bashrc_custom ]] && source ~/.bashrc_custom
-
 
 ###############################################################################
 # Now that we have altered $PATH, make a few other environment-specific tweaks
