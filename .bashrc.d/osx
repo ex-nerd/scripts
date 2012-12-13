@@ -14,6 +14,7 @@ fi
 alias komodo='open -a "Komodo Edit.app"'
 alias chrome='open -a "Google Chrome.app"'
 alias eclipse='open -a "Eclipse.app"'
+alias phpstorm='open -a "PhpStorm.app"'
 
 #
 #
@@ -21,10 +22,20 @@ alias macsleep='osascript -e '\''tell application "System Events" to sleep'\'''
 
 
 # Macports setup:
-# sudo port install git-core +svn+bash_completion
+# echo '+bash_completion' | sudo tee -a /opt/local/etc/macports/variants.conf
+# sudo port install git-core +svn
+# sudo port install p5-app-ack
 
 # Fix after XCode 4.3 install:
 # sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+
+# PHP:
+# sudo port install php54 +apache2 +fastcgi +pear
+# sudo port select php php54
+# sudo port install pear-PEAR
+# sudo port install pear-PHP_CodeSniffer
+# Update php.ini include_path with /opt/local/lib/php/pear
+PATH="/opt/local/lib/php/pear/bin:$PATH"
 
 ########################################################################
 # http://osxdaily.com/2012/10/09/best-defaults-write-commands-mac-os-x/
