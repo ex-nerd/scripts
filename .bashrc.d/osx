@@ -27,12 +27,19 @@ alias macsleep='osascript -e '\''tell application "System Events" to sleep'\'''
 # sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
 
 ########################################################################
+# http://osxdaily.com/2012/10/09/best-defaults-write-commands-mac-os-x/
 
 # Lion:  Don't hide ~/Library
 chflags nohidden ~/Library/
 
 # Check for updates once/week
 # sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate ScheduleFrequency 1
+
+# Show basic system info on login screen
+# sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
+
+# Speed up Mission Control animations
+# defaults write com.apple.dock expose-animation-duration -float 0.12 && killall Dock
 
 # Show hidden files in the finder
 # defaults write com.apple.finder AppleShowAllFiles -bool YES
