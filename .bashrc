@@ -411,11 +411,11 @@ fi
   if [[ -d ~/.bashrc.d ]]; then
     for file in ~/.bashrc.d/*; do
       if [[ ${file:$((${#file}-4)):4} == '.loc' ]]; then
-        if [[ $file == $/.bashrc.d/"$LOCATION".loc ]]; then
+        if [[ $file == ~/.bashrc.d/"$LOCATION".loc ]]; then
           source "$file"
         fi
       elif [[ ${file:$((${#file}-7)):7} == '.notloc' ]]; then
-        if [[ $file != $/.bashrc.d/"$LOCATION".notloc ]]; then
+        if [[ $file != ~/.bashrc.d/"$LOCATION".notloc ]]; then
           source "$file"
         fi
       else
