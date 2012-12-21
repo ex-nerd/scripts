@@ -10,11 +10,12 @@ if [[ -d "$HOME/Documents/android-sdk-mac_x86" ]]; then
 fi
 
 #
-#
+# Aliases for some commonly-used apps
 alias komodo='open -a "Komodo Edit.app"'
 alias chrome='open -a "Google Chrome.app"'
 alias eclipse='open -a "Eclipse.app"'
 alias phpstorm='open -a "PhpStorm.app"'
+alias idea='open -a "IntelliJ IDEA 12.app"'
 
 #
 #
