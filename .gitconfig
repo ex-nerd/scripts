@@ -40,6 +40,7 @@
 	cleanup = !git_cleanup
 	only = !git_only
 	gpush = push origin HEAD:refs/for/master
+	pruneall = "!git fetch origin --prune --tags; git remote prune origin"
 [push]
 	default = tracking
 [pull]
