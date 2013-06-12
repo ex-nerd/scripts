@@ -22,6 +22,9 @@ alias idea='open -a "IntelliJ IDEA 12.app"'
 alias macsleep='osascript -e '\''tell application "System Events" to sleep'\'''
 
 
+# For wand/python
+MAGICK_HOME=/opt/local
+
 # Macports setup:
 # echo '+bash_completion' | sudo tee -a /opt/local/etc/macports/variants.conf
 # sudo port install git-core +svn
