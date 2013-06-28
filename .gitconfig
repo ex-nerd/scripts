@@ -41,6 +41,7 @@
 	only = !git_only
 	gpush = push origin HEAD:refs/for/master
 	pruneall = "!git fetch origin --prune --tags; git remote prune origin"
+	bpush = "!git push --set-upstream origin $(git describe --contains --all HEAD)"
 [push]
 	default = tracking
 [pull]
