@@ -36,8 +36,10 @@ fi
     fi
     IFS_STORE="$IFS"
     IFS=$'\n'
+    FOUND=0
     for REMOTE in `git remote`; do
         if [[ $BRANCH == "$REMOTE/"* ]]; then
+          FOUND=1
           SHORT_BRANCH=${BRANCH#$REMOTE/}
           GITHUB_REPO=`git remote show "$REMOTE" | grep 'Fetch URL' | awk -F: '{ print $3 }' | sed -e 's,.git$,,'`
           if [[ $? != 0 ]]; then
@@ -48,12 +50,13 @@ fi
             echo "Couldn't determine github project info"
             break
           fi
-          if [[ $SHORT_BRANCH == 'master' ]]; then
-            # todo `git br -a | grep HEAD | ....`
-            URL="https://github.com/$GITHUB_REPO/"
-          else
+          # Check for 'master' Disabled because I need support odd repositories that don't use "master" as the default
+          # TODO DEF_BRANCH=`git br -a | grep HEAD | ....`
+          #if [[ $SHORT_BRANCH == 'master' ]]; then
+          #  URL="https://github.com/$GITHUB_REPO/"
+          #else
             URL="https://github.com/$GITHUB_REPO/tree/$SHORT_BRANCH"
-          fi
+          #fi
           echo "$URL"
           if [[ `uname` == 'Darwin' ]]; then
             open "$URL"
@@ -65,6 +68,9 @@ fi
           break
         fi
     done
+    if [[ $FOUND == 0 ]]; then
+      echo "This branch does not appear to be tracking a remote."
+    fi
     IFS="$IFS_STORE"
   }
 
