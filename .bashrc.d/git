@@ -21,6 +21,54 @@ fi
   alias gg='git grep'
 
 #
+# opens the current branch on github.com.  Would call this "github" but it conflicts with github's own CLI app to open their desktop app
+#
+
+  git_hub() {
+    BRANCH=`git rev-parse --symbolic-full-name --abbrev-ref @{u} 2>/dev/null`
+    if [[ $? != 0 ]]; then
+      echo "Not currently in a git repository"
+      return
+    fi
+    if [[ -z $BRANCH ]]; then
+      echo "Can't determine current git branch name"
+      return
+    fi
+    IFS_STORE="$IFS"
+    IFS=$'\n'
+    for REMOTE in `git remote`; do
+        if [[ $BRANCH == "$REMOTE/"* ]]; then
+          SHORT_BRANCH=${BRANCH#$REMOTE/}
+          GITHUB_REPO=`git remote show "$REMOTE" | grep 'Fetch URL' | awk -F: '{ print $3 }' | sed -e 's,.git$,,'`
+          if [[ $? != 0 ]]; then
+            echo "Error loading github project info"
+            break
+          fi
+          if [[ -z $BRANCH ]]; then
+            echo "Couldn't determine github project info"
+            break
+          fi
+          if [[ $SHORT_BRANCH == 'master' ]]; then
+            # todo `git br -a | grep HEAD | ....`
+            URL="https://github.com/$GITHUB_REPO/"
+          else
+            URL="https://github.com/$GITHUB_REPO/tree/$SHORT_BRANCH"
+          fi
+          echo "$URL"
+          if [[ `uname` == 'Darwin' ]]; then
+            open "$URL"
+          elif `which xdg-open >/dev/null`; then
+            xdg-open "$URL"
+          else
+            echo "Couldn't find URL opener"
+          fi
+          break
+        fi
+    done
+    IFS="$IFS_STORE"
+  }
+
+#
 # git_cleanup is intended to be attached to a git alias.
 # It will remove any remote (origin) branches that have already been merged into
 # master, and have remained untouched for at least a month.
