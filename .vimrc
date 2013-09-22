@@ -33,7 +33,7 @@ if has("autocmd")
     "   Set tab stops to 4, and enable soft tabs
     "   Enable smart auto-indent
     "
-    autocmd FileType c,html,perl,php,sh,txt
+    autocmd FileType c,html,perl,php,python,sh,txt
         \ set tabstop=4         |
         \ set softtabstop=4     |
         \ set expandtab         |
@@ -41,7 +41,7 @@ if has("autocmd")
         \ set smarttab          |
         \ set shiftwidth=4
 
-    autocmd FileType c,html,perl,php,sh,txt
+    autocmd FileType c,html,perl,php,python,sh,txt
         \ autocmd BufWritePre <buffer> :%s/\s\+$//e
 
 endif
