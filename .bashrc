@@ -279,6 +279,19 @@
   done
 
 #
+# Now that we have altered $PATH, make a few other environment-specific tweaks
+#
+
+# Use gnu utilities if they're available
+  if [[ $IS_SUN || $IS_MAC ]]; then
+    for APP in grep find tar sed; do
+      if which g$APP &> /dev/null; then
+        alias $APP=g$APP
+      fi
+    done
+  fi
+
+#
 # Setup Grep
 #
   export GREP_OPTIONS=
@@ -349,12 +362,6 @@
 
   fi
 
-# Make OpenOffice display things in its own UI widgets rather than trying to
-# use gnome or kde (work around a bug that makes OO hide cell background
-# colors if the "input field" background color is too dark for some unknown
-# threshhold).
-  export SAL_USE_VCLPLUGIN=gen
-
 ###############################################################################
 # Things very specific to MacOS
 #
@@ -363,6 +370,7 @@ if [[ $IS_MAC ]]; then
 
 # Turn on bash-completion for macs
   [[ -f /opt/local/etc/bash_completion ]] && source /opt/local/etc/bash_completion
+  [[ -f /usr/local/etc/bash_completion ]] && source /usr/local/etc/bash_completion
 
 # Fink installed?
   if [[ -d /sw ]]; then
@@ -426,17 +434,4 @@ fi
 
 # And finally even more, just in case
   [[ -f ~/.bashrc_custom ]] && source ~/.bashrc_custom
-
-###############################################################################
-# Now that we have altered $PATH, make a few other environment-specific tweaks
-#
-
-# Use gnu utilities if they're available
-  if [[ $IS_SUN || $IS_MAC ]]; then
-    for APP in grep find tar sed; do
-      if which g$APP &> /dev/null; then
-        alias $APP=g$APP
-      fi
-    done
-  fi
 
