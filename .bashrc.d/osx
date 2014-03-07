@@ -41,11 +41,6 @@ MAGICK_HOME=/opt/local
 # Update php.ini include_path with /opt/local/lib/php/pear
 PATH="/opt/local/lib/php/pear/bin:$PATH"
 
-# Homebrew bash completion
-if which brew > /dev/null; then
-    source `brew --repository`/Library/Contributions/brew_bash_completion.sh
-fi
-
 ########################################################################
 # http://osxdaily.com/2012/10/09/best-defaults-write-commands-mac-os-x/
 

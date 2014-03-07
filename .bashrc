@@ -371,6 +371,7 @@ if [[ $IS_MAC ]]; then
 # Turn on bash-completion for macs
   [[ -f /opt/local/etc/bash_completion ]] && source /opt/local/etc/bash_completion
   [[ -f /usr/local/etc/bash_completion ]] && source /usr/local/etc/bash_completion
+  which brew > /dev/null && source `brew --repository`/Library/Contributions/brew_bash_completion.sh
 
 # Fink installed?
   if [[ -d /sw ]]; then
