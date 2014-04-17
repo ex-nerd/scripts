@@ -16,6 +16,9 @@ set mouse=
 " Indent engines
 filetype indent on
 
+set background=dark
+set backspace=indent,eol,start    " allow backspace over anything in insert mode
+
 "
 "  AutoCommmand options
 "
