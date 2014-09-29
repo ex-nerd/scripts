@@ -21,7 +21,6 @@ alias idea='open -a "IntelliJ IDEA 13.app"'
 #
 alias macsleep='osascript -e '\''tell application "System Events" to sleep'\'''
 
-
 # For wand/python
 MAGICK_HOME=/opt/local
 
@@ -40,6 +39,12 @@ MAGICK_HOME=/opt/local
 # sudo port install pear-PHP_CodeSniffer
 # Update php.ini include_path with /opt/local/lib/php/pear
 PATH="/opt/local/lib/php/pear/bin:$PATH"
+
+# Runs the commands to flush the OSX DNS cache
+function flush_dns() {
+    sudo killall -HUP mDNSResponder
+    sudo dscacheutil -flushcache
+}
 
 ########################################################################
 # http://osxdaily.com/2012/10/09/best-defaults-write-commands-mac-os-x/
