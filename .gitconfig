@@ -2,6 +2,7 @@
 	branch = auto
 	diff = auto
 	status = auto
+	ui = true
 [color "branch"]
 	current = yellow reverse
 	local = yellow
@@ -11,12 +12,18 @@
 	frag = magenta bold
 	old = red bold
 	new = green bold
+[color "grep"]
+   context = normal
+   filename = magenta
+   function = cyan
+   linenumber = green
+   match = green
+   selected = normal
+   separator = cyan
 [color "status"]
 	added = yellow
 	changed = green
 	untracked = cyan
-[color]
-	ui = true
 [branch]
 	autosetupmerge = true
 [core]
