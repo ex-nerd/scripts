@@ -49,7 +49,8 @@
 #
   for file in \
     /etc/*bashrc /etc/profile /etc/bash/bashrc \
-    /etc/bash_completion ~/.bash_aliases \
+    ~/.bash_aliases \
+    /etc/bash_completion \
     /sw/bin/init.sh
   do
     [[ -f "$file" ]] && source "$file"
@@ -369,9 +370,14 @@
 if [[ $IS_MAC ]]; then
 
 # Turn on bash-completion for macs
-  [[ -f /opt/local/etc/bash_completion ]] && source /opt/local/etc/bash_completion
-  [[ -f /usr/local/etc/bash_completion ]] && source /usr/local/etc/bash_completion
-  which brew > /dev/null && source `brew --repository`/Library/Contributions/brew_bash_completion.sh
+  if which brew > /dev/null; then
+    for file in \
+      `brew --prefix`/etc/bash_completion
+    do
+      [[ -f "$file" ]] && source "$file"
+    done
+    source `brew --prefix`/Library/Contributions/brew_bash_completion.sh
+  fi
 
 # Fink installed?
   if [[ -d /sw ]]; then
