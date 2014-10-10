@@ -1,9 +1,11 @@
 brew tap homebrew/dupes
 
 brew install coreutils
+brew install gnu-sed
 brew install findutils
 brew install homebrew/dupes/grep
 
 brew install git
 brew install bash-completion bash
 brew install wget
+brew install colordiff
