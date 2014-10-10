@@ -1,67 +1,64 @@
-[color]
-	branch = auto
-	diff = auto
-	status = auto
-	ui = true
-[color "branch"]
-	current = yellow reverse
-	local = yellow
-	remote = green
-[color "diff"]
-	meta = yellow bold
-	frag = magenta bold
-	old = red bold
-	new = green bold
-[color "grep"]
-   context = normal
-   filename = magenta
-   function = cyan
-   linenumber = green
-   match = green
-   selected = normal
-   separator = cyan
-[color "status"]
-	added = yellow
-	changed = green
-	untracked = cyan
-[branch]
-	autosetupmerge = true
-[core]
-	whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
-	excludesfile = $HOME/.gitignore
-[alias]
-	st = status
-	stat = status
-	ci = commit
-	br = branch
-	branchlog = "!git log $(git rev-parse --not --branches | grep -v $(git rev-parse $1)) $1"
-        f = fetch
-	co = checkout
-	df = diff
-        dc = diff --cached
-	dif = diff
-	lg = log -p
-	up = pull
-	new = "!git log $(ref=$(git symbolic-ref HEAD); echo $(git config -z --get branch.${ref##refs/heads/}.remote)/$(rbranch=$(git config --get branch.${ref##refs/heads/}.merge); echo ${rbranch##refs/heads/})).."
-        wheres=branch -a --contains
-	cleanup = !git_cleanup
-	only = !git_only
-	gpush = push origin HEAD:refs/for/master
-	pruneall = "!git fetch origin --prune --tags; git remote prune origin"
-	bpush = "!git push --set-upstream origin $(git describe --contains --all HEAD)"
-[difftool "sourcetree"]
-	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-	path = 
-[mergetool "sourcetree"]
-	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-	trustExitCode = true
-[push]
-	default = tracking
-[pull]
-	default = rebase
 [user]
-	name = Chris Petersen
-[merge]
-	tool = vimdiff
+    name = Chris Petersen
+[core]
+    whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
+    excludesfile = $HOME/.gitignore
 [http]
-	sslVerify = false
+    sslVerify = false
+[branch]
+    autosetupmerge = true
+[push]
+    default = tracking
+[pull]
+    default = rebase
+[difftool "sourcetree"]
+    cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+    path =
+[merge]
+    tool = vimdiff
+[mergetool "sourcetree"]
+    cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+    trustExitCode = true
+[color]
+    branch = auto
+    diff = auto
+    status = auto
+    ui = true
+[color "branch"]
+    current = yellow reverse
+    local = yellow
+    remote = green
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+[color "grep"]
+    context = normal
+    filename = magenta
+    function = cyan
+    linenumber = green
+    match = green
+    selected = normal
+    separator = cyan
+[color "status"]
+    added = green
+    changed = yellow
+    untracked = cyan
+[alias]
+    br = branch
+    branchlog = "!git log $(git rev-parse --not --branches | grep -v $(git rev-parse $1)) $1"
+    ci = commit
+    cleanup = !git_cleanup
+    co = checkout
+    dc = diff --cached
+    dif = diff
+    logn = log --name-status
+    logp = log -p
+    new = "!git log $(ref=$(git symbolic-ref HEAD); echo $(git config -z --get branch.${ref##refs/heads/}.remote)/$(rbranch=$(git config --get branch.${ref##refs/heads/}.merge); echo ${rbranch##refs/heads/})).."
+    only = !git_only
+    pruneall = "!git fetch origin --prune --tags; git remote prune origin"
+    st = status
+    stat = status
+    wheres=branch -a --contains
+    bpush = "!git push --set-upstream origin $(git describe --contains --all HEAD)"
