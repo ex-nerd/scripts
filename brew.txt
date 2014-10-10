@@ -5,7 +5,7 @@ brew install gnu-sed
 brew install findutils
 brew install homebrew/dupes/grep
 
-brew install git
+brew install git hub
 brew install bash-completion bash
 brew install wget
 brew install colordiff
