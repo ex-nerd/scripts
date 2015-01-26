@@ -62,3 +62,5 @@
     stat = status
     wheres=branch -a --contains
     bpush = "!git push --set-upstream origin $(git describe --contains --all HEAD)"
+[credential]
+	helper = osxkeychain
