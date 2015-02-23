@@ -16,6 +16,7 @@ alias chrome='open -a "Google Chrome.app"'
 alias eclipse='open -a "Eclipse.app"'
 alias phpstorm='open -a "PhpStorm.app"'
 alias idea='open -a "IntelliJ IDEA 14.app"'
+alias sublime='open -a "Sublime Text.app"'
 
 #
 #
