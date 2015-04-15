@@ -56,6 +56,9 @@ chflags nohidden ~/Library/
 # Enable text selection in quicklook windows
 #defaults write com.apple.finder QLEnableTextSelection -bool TRUE
 
+# Enable debug menu in itunes and app store
+# defaults write com.apple.appstore ShowDebugMenu -bool YES
+
 # Check for updates once/week
 # sudo defaults write /Library/Preferences/com.apple.SoftwareUpdate ScheduleFrequency 1
 
