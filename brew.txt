@@ -1,4 +1,5 @@
 brew tap homebrew/dupes
+brew install caskroom/cask/brew-cask
 
 brew install coreutils
 brew install gnu-sed
