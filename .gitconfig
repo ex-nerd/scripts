@@ -47,20 +47,25 @@
     untracked = cyan
 [alias]
     br = branch
-    branchlog = "!git log $(git rev-parse --not --branches | grep -v $(git rev-parse $1)) $1"
     ci = commit
-    cleanup = !git_cleanup
     co = checkout
     dc = diff --cached
     dif = diff
+    mergenoff = merge --no-ff
+    st = status
+    stat = status
+    # Cleanup
+    cleanup = !git_cleanup # remove already-merged branches that have not changed in a month
+    pruneall = "!git fetch origin --prune --tags; git remote prune origin"
+    # Search/Log
+    branchlog = "!git log $(git rev-parse --not --branches | grep -v $(git rev-parse $1)) $1"
     logn = log --name-status
     logp = log -p
     new = "!git log $(ref=$(git symbolic-ref HEAD); echo $(git config -z --get branch.${ref##refs/heads/}.remote)/$(rbranch=$(git config --get branch.${ref##refs/heads/}.merge); echo ${rbranch##refs/heads/})).."
     only = !git_only
-    pruneall = "!git fetch origin --prune --tags; git remote prune origin"
-    st = status
-    stat = status
     wheres=branch -a --contains
-    bpush = "!git push --set-upstream origin $(git describe --contains --all HEAD)"
+    # branch per feature: https://rubygems.org/gems/git_bpf
+    newqa="!_git-bpf recreate-branch qa"
+    forceqa=push --force origin qa
 [credential]
     helper = osxkeychain
