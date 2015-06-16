@@ -58,9 +58,8 @@
     cleanup = !git_cleanup # remove already-merged branches that have not changed in a month
     pruneall = "!git fetch origin --prune --tags; git remote prune origin"
     # Search/Log
-    branchlog = "!git log $(git rev-parse --not --branches | grep -v $(git rev-parse $1)) $1"
-    logn = log --name-status
-    logp = log -p
+    logn = log --decorate --name-status
+    logp = log --patch
     new = "!git log $(ref=$(git symbolic-ref HEAD); echo $(git config -z --get branch.${ref##refs/heads/}.remote)/$(rbranch=$(git config --get branch.${ref##refs/heads/}.merge); echo ${rbranch##refs/heads/})).."
     only = !git_only
     wheres=branch -a --contains
