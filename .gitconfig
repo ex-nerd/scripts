@@ -68,3 +68,5 @@
     forceqa=push --force origin qa
 [credential]
     helper = osxkeychain
+[rerere]
+    enabled = true
