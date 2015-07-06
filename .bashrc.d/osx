@@ -57,7 +57,9 @@ function flush_dns() {
 # http://osxdaily.com/2012/10/09/best-defaults-write-commands-mac-os-x/
 
 # Lion:  Don't hide ~/Library
-chflags nohidden ~/Library/
+#sudo chflags nohidden ~/Library/
+#sudo chflags nohidden /Users/
+#sudo chflags nohidden /Users/$USER
 
 # Enable text selection in quicklook windows
 #defaults write com.apple.finder QLEnableTextSelection -bool TRUE
