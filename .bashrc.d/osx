@@ -45,7 +45,7 @@ MAGICK_HOME=/opt/local
 # sudo port install pear-PEAR
 # sudo port install pear-PHP_CodeSniffer
 # Update php.ini include_path with /opt/local/lib/php/pear
-PATH="/opt/local/lib/php/pear/bin:$PATH"
+#PATH="/opt/local/lib/php/pear/bin:$PATH"
 
 # Runs the commands to flush the OSX DNS cache
 function flush_dns() {
