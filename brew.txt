@@ -1,5 +1,5 @@
+
 brew tap homebrew/dupes
-brew install caskroom/cask/brew-cask
 
 brew install coreutils
 brew install gnu-sed
@@ -14,7 +14,33 @@ brew install colordiff
 brew install imagemagick
 
 # http://www.kodiakskorner.com/log/258
-brew install sleepwatcher
+#brew install sleepwatcher
+
+
+# http://lapwinglabs.com/blog/hacker-guide-to-setting-up-your-mac
+
+brew install caskroom/cask/brew-cask
+brew tap caskroom/versions
+
+brew tap caskroom/fonts
+brew install font-hack
+brew install font-source-code-pro
 
 # https://github.com/sindresorhus/quick-look-plugins
-brew cask install qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
+apps=(
+  qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
+  iterm2
+  dropbox
+  firefox
+  google-chrome
+  sublime-text3
+  mackup
+)
+brew cask install --appdir="/Applications" ${apps[@]}
+
+
+cat <<EOF > ~/.mackup.cfg
+[storage]
+engine = file_system
+path = Dropbox/_prefs_backup/
+EOF
