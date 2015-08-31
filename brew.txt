@@ -34,11 +34,11 @@ apps=(
   firefox
   google-chrome
   sublime-text3
-  mackup
 )
 brew cask install --appdir="/Applications" ${apps[@]}
 
 
+brew install mackup
 cat <<EOF > ~/.mackup.cfg
 [storage]
 engine = file_system
