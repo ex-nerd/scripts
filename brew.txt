@@ -12,10 +12,10 @@ brew install wget
 brew install colordiff
 
 brew install imagemagick
+brew install rename
 
 # http://www.kodiakskorner.com/log/258
 #brew install sleepwatcher
-
 
 # http://lapwinglabs.com/blog/hacker-guide-to-setting-up-your-mac
 
@@ -30,10 +30,18 @@ brew cask install font-source-code-pro
 apps=(
   qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
   iterm2
-  dropbox
-  firefox
-  google-chrome
-  sublime-text3
+  imagealpha
+  imageoptim
+  vlc
+  sourcetree
+  torbrowser
+  sketchup
+  openscad
+#  steam
+#  dropbox
+#  firefox
+#  google-chrome
+#  sublime-text3
 )
 brew cask install --appdir="/Applications" ${apps[@]}
 
