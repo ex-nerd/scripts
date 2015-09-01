@@ -23,8 +23,8 @@ brew install caskroom/cask/brew-cask
 brew tap caskroom/versions
 
 brew tap caskroom/fonts
-brew install font-hack
-brew install font-source-code-pro
+brew cask install font-hack
+brew cask install font-source-code-pro
 
 # https://github.com/sindresorhus/quick-look-plugins
 apps=(
