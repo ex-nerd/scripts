@@ -67,6 +67,10 @@ function flush_dns() {
 # Enable text selection in quicklook windows
 #defaults write com.apple.finder QLEnableTextSelection -bool TRUE
 
+# Don't let GateKeeper automatically re-enable itself
+#sudo defaults write /Library/Preferences/com.apple.security GKAutoRearm -bool NO
+# or add things manually..  http://osxdaily.com/2015/07/15/add-remove-gatekeeper-app-command-line-mac-os-x/
+
 # Enable debug menu in itunes and app store
 # defaults write com.apple.appstore ShowDebugMenu -bool YES
 
