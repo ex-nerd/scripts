@@ -26,9 +26,11 @@ brew tap caskroom/fonts
 brew cask install font-hack
 brew cask install font-source-code-pro
 
+# https://github.com/caskroom/homebrew-cask/tree/master/Casks
 # https://github.com/sindresorhus/quick-look-plugins
 apps=(
   qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
+  cert-quicklook
   iterm2
   imagealpha
   imageoptim
