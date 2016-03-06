@@ -1,0 +1,2 @@
+alias merge_audiobook='build_m4b.py && if [[ -f overdrive_chapters.txt ]]; then /bin/mv -f overdrive_chapters.txt  *.chapters.txt  && mp4chaps -i *m4b && mp4chaps -l *m4b; fi'
+alias fix_track_numbers='for file in ?-*; do mv "$file" "0$file"; done'
