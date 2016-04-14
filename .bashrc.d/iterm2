@@ -6,8 +6,10 @@ else
     echo "    curl -L https://iterm2.com/misc/install_shell_integration.sh | bash"
 fi
 
-IMGCAT="/usr/local/bin/imgcat"
-if [[ ! -e $IMGCAT ]]; then
-  echo "No imgcat. Please run:"
-  echo "    curl -o $IMGCAT -L https://raw.github.com/gnachman/iTerm2/master/tests/imgcat && chmod 755 $IMGCAT"
-fi
+for APP in imgcat imgls; do
+    APP_PATH="/usr/local/bin/$APP"
+    if [[ ! -e $APP_PATH ]]; then
+        echo "No imgcat. Please run:"
+        echo "    curl -o $APP_PATH -L https://raw.github.com/gnachman/iTerm2/master/tests/$APP && chmod 755 $APP_PATH"
+    fi
+done
