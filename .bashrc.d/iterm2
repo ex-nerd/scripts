@@ -1,0 +1,13 @@
+
+if [[ -e "${HOME}/.iterm2_shell_integration.bash" ]]; then
+    source "${HOME}/.iterm2_shell_integration.bash"
+else
+    echo "No iterm integration.  Please run:"
+    echo "    curl -L https://iterm2.com/misc/install_shell_integration.sh | bash"
+fi
+
+IMGCAT="/usr/local/bin/imgcat"
+if [[ ! -e $IMGCAT ]]; then
+  echo "No imgcat. Please run:"
+  echo "    curl -o $IMGCAT -L https://raw.github.com/gnachman/iTerm2/master/tests/imgcat && chmod 755 $IMGCAT"
+fi
