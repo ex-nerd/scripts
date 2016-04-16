@@ -5,6 +5,7 @@ brew install coreutils
 brew install gnu-sed
 brew install findutils
 brew install homebrew/dupes/grep
+brew install progress  # https://github.com/Xfennec/progress
 
 brew install git hub
 brew install bash-completion bash
@@ -25,6 +26,8 @@ brew tap caskroom/versions
 brew tap caskroom/fonts
 brew cask install font-hack
 brew cask install font-source-code-pro
+# for seagl program
+brew cask install font-dosis
 
 # https://github.com/caskroom/homebrew-cask/tree/master/Casks
 # https://github.com/sindresorhus/quick-look-plugins
