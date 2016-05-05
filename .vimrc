@@ -6,6 +6,7 @@ set ignorecase
 
 " Show line/column numbers
 set ruler
+set nu
 
 " Flash matching brackets
 set showmatch
