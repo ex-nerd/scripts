@@ -303,8 +303,8 @@
     export GREP_OPTIONS="--exclude-dir=.git $GREP_OPTIONS"
     export GREP_OPTIONS="--exclude-dir=CVS $GREP_OPTIONS"
   elif grep --help | grep -- --exclude= &> /dev/null; then
-    export GREP_OPTIONS="--exclude=\*.svn\* $GREP_OPTIONS"
-    export GREP_OPTIONS="--exclude=\*.git\* $GREP_OPTIONS"
+    export GREP_OPTIONS="--exclude='*.svn*' $GREP_OPTIONS"
+    export GREP_OPTIONS="--exclude='*.git*' $GREP_OPTIONS"
     # would like to exclude CVS here, but it's too generic without slashes
   fi
 
@@ -313,6 +313,15 @@
     export GREP_OPTIONS="--color=auto $GREP_OPTIONS"
     export GREP_COLOR='0;32'
   fi
+
+  # Apply the options without using the now-deprecated env var
+  if which ggrep &> /dev/null; then
+    alias grep="ggrep $GREP_OPTIONS"
+  else
+    alias grep="grep $GREP_OPTIONS"
+  fi
+  export GREP_OPTIONS=
+
 # Prepare the ls color options
   if [[ $IS_MAC ]]; then
     export CLICOLOR=1
