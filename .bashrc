@@ -381,11 +381,11 @@ if [[ $IS_MAC ]]; then
 # Turn on bash-completion for macs
   if which brew > /dev/null; then
     for file in \
-      `brew --prefix`/etc/bash_completion
+      $(brew --prefix)/etc/bash_completion \
+      $(brew --prefix)/etc/bash_completion.d/brew
     do
       [[ -f "$file" ]] && source "$file"
     done
-    source `brew --prefix`/Library/Contributions/brew_bash_completion.sh
   fi
 
 # Fink installed?
