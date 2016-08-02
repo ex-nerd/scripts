@@ -35,14 +35,14 @@ brew cask install font-dosis
 apps=(
   qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
   cert-quicklook
-  iterm2
-  imagealpha
-  imageoptim
-  vlc
-  sourcetree
-  torbrowser
-  sketchup
-  openscad
+#  iterm2
+#  imagealpha
+#  imageoptim
+#  vlc
+#  sourcetree
+#  torbrowser
+#  sketchup
+#  openscad
 #  steam
 #  dropbox
 #  firefox
@@ -52,9 +52,10 @@ apps=(
 brew cask install --appdir="/Applications" ${apps[@]}
 
 
-brew install mackup
-cat <<EOF > ~/.mackup.cfg
-[storage]
-engine = file_system
-path = Dropbox/_prefs_backup/
-EOF
+# mackup is a cool idea but a PITA for systems on different networks
+#brew install mackup
+#cat <<EOF > ~/.mackup.cfg
+#[storage]
+#engine = file_system
+#path = Dropbox/_prefs_backup/
+#EOF
