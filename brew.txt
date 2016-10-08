@@ -12,6 +12,8 @@ brew install git hub
 brew install bash-completion bash
 brew install wget
 brew install colordiff
+$(brew --prefix)/bin/pip install virtualenvwrapper ipython
+
 
 brew install imagemagick
 brew install rename
