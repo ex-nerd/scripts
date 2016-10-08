@@ -32,6 +32,8 @@ brew cask install font-source-code-pro
 # for seagl program
 brew cask install font-dosis
 
+brew install Caskroom/cask/java
+
 # https://github.com/caskroom/homebrew-cask/tree/master/Casks
 # https://github.com/sindresorhus/quick-look-plugins
 apps=(
