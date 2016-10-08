@@ -285,7 +285,7 @@
 
 # Use gnu utilities if they're available
   if [[ $IS_SUN || $IS_MAC ]]; then
-    for APP in grep find tar sed; do
+    for APP in grep find tar sed xargs; do
       if which g$APP &> /dev/null; then
         alias $APP=g$APP
       fi
