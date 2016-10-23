@@ -16,7 +16,19 @@ $(brew --prefix)/bin/pip install virtualenvwrapper ipython
 
 
 brew install imagemagick
+
+brew install libdvdcss
+
+brew install ssh-copy-id
 brew install rename
+
+brew install html-xml-utils
+
+brew install hugo
+brew install tree
+
+# for photorec, memory card un-deleter
+brew install testdisk
 
 # http://www.kodiakskorner.com/log/258
 #brew install sleepwatcher
@@ -28,6 +40,7 @@ brew tap caskroom/versions
 
 brew tap caskroom/fonts
 brew cask install font-hack
+brew cask install font-monoid
 brew cask install font-source-code-pro
 # for seagl program
 brew cask install font-dosis
@@ -37,7 +50,7 @@ brew install Caskroom/cask/java
 # https://github.com/caskroom/homebrew-cask/tree/master/Casks
 # https://github.com/sindresorhus/quick-look-plugins
 apps=(
-  qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
+  qlvideo qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
   cert-quicklook
 #  iterm2
 #  imagealpha
