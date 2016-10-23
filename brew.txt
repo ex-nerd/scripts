@@ -55,8 +55,8 @@ apps=(
 )
 brew cask install --appdir="/Applications" ${apps[@]}
 
-
 # mackup is a cool idea but a PITA for systems on different networks
+# Kept around for posterity.
 #brew install mackup
 #cat <<EOF > ~/.mackup.cfg
 #[storage]
