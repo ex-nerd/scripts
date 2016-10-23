@@ -2,14 +2,5 @@
 if [[ -e "${HOME}/.iterm2_shell_integration.bash" ]]; then
     source "${HOME}/.iterm2_shell_integration.bash"
 else
-    echo "No iterm integration.  Please run:"
-    echo "    curl -L https://iterm2.com/misc/install_shell_integration.sh | bash"
+    echo "No iterm integration.  Please install via iTerm2 menu"
 fi
-
-for APP in imgcat imgls; do
-    APP_PATH="/usr/local/bin/$APP"
-    if [[ ! -e $APP_PATH ]]; then
-        echo "No imgcat. Please run:"
-        echo "    curl -o $APP_PATH -L https://raw.github.com/gnachman/iTerm2/master/tests/$APP && chmod 755 $APP_PATH"
-    fi
-done
