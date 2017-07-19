@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # encode with 64kbps stereo, HE, optimize for voice
 #
