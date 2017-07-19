@@ -52,34 +52,14 @@ brew cask install font-source-code-pro
 # for seagl program
 brew cask install font-dosis
 
-brew install Caskroom/cask/java
+# Why do I want to install brew's java?
+# brew install Caskroom/cask/java
 
 # https://github.com/caskroom/homebrew-cask/tree/master/Casks
 # https://github.com/sindresorhus/quick-look-plugins
 apps=(
-  qlvideo qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package
-  cert-quicklook
-#  iterm2
-#  imagealpha
-#  imageoptim
-#  vlc
-#  sourcetree
-#  torbrowser
-#  sketchup
-#  openscad
-#  steam
-#  dropbox
-#  firefox
-#  google-chrome
-#  sublime-text3
+  qlcolorcode qlstephen qlmarkdown quicklook-json qlprettypatch quicklook-csv betterzipql qlimagesize webpquicklook suspicious-package quicklookase qlvideo
+#  sad..  no longer available: cert-quicklook
+#  install the old fashioned way: imagealpha imageoptim
 )
 brew cask install --appdir="/Applications" ${apps[@]}
-
-# mackup is a cool idea but a PITA for systems on different networks
-# Kept around for posterity.
-#brew install mackup
-#cat <<EOF > ~/.mackup.cfg
-#[storage]
-#engine = file_system
-#path = Dropbox/_prefs_backup/
-#EOF
