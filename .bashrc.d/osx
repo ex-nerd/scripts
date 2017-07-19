@@ -48,7 +48,8 @@ MAGICK_HOME=/opt/local
 #PATH="/opt/local/lib/php/pear/bin:$PATH"
 
 # Use OSX locate database
-alias updatedb='sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist'
+#alias updatedb='sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist'
+alias updatedb="sudo /usr/libexec/locate.updatedb"
 
 # Runs the commands to flush the OSX DNS cache
 function flush_dns() {
