@@ -15,6 +15,11 @@ if [[ -d "/Applications/Sublime Text.app/Contents/SharedSupport/bin" ]]; then
     export PATH="$PATH:/Applications/Sublime Text.app/Contents/SharedSupport/bin"
 fi
 
+if [[ -d "/usr/local/opt/python/libexec/bin" ]]; then
+    # homebrew python
+    export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+fi
+
 #
 # Aliases for some commonly-used apps
 alias komodo='open -a "Komodo Edit.app"'
