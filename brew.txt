@@ -7,6 +7,7 @@ brew install findutils
 brew install homebrew/dupes/grep
 brew install progress  # https://github.com/Xfennec/progress
 brew install direnv
+brew install pv
 
 brew install git hub
 brew install bash-completion bash
@@ -14,10 +15,10 @@ brew install wget
 brew install colordiff
 $(brew --prefix)/bin/pip install virtualenvwrapper ipython
 
-
 brew install imagemagick
 
 brew install libdvdcss
+brew install mp4v2 gpac
 
 brew install ssh-copy-id
 brew install rename
@@ -26,6 +27,12 @@ brew install html-xml-utils
 
 brew install hugo
 brew install tree
+
+# Better than Apple's built-in one
+brew install nano
+
+# for json parsing via bash
+brew install jq
 
 # for photorec, memory card un-deleter
 brew install testdisk
