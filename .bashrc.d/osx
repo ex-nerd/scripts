@@ -123,6 +123,9 @@ defaults write com.apple.desktopservices DSDontWriteNetworkStores -bool true
 # Disable auto-save and re-enable save-as in TextEdit
 # defaults write com.apple.TextEdit ApplePersistence -bool no
 
+# Show as many Services items as possible in the context menu
+# defaults write -g NSServicesMinimumItemCountForContextSubmenu -int 999
+
 #http://secrets.blacktree.com/
 #http://hints.macworld.com/article.php?story=20101103055948533
 #http://www.macosxtips.co.uk/index_files/terminal-commands-for-hidden-mac-os-x-settings.html
