@@ -1,10 +1,9 @@
 
-brew tap homebrew/dupes
 
 brew install coreutils
-brew install gnu-sed
-brew install findutils
-brew install homebrew/dupes/grep
+brew install gnu-sed  # --with-default-names
+brew install findutils  # --with-default-names
+brew install grep  # --with-default-names
 brew install progress  # https://github.com/Xfennec/progress
 brew install direnv
 brew install pv
