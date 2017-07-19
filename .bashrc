@@ -274,7 +274,6 @@
       /usr/*/bin/           \
       /opt/*/bin/           \
       /usr/java/*/bin/      \
-      /usr/lib/courier/*bin \
       ; do
     prepend_path "$dir"
   done
@@ -386,40 +385,6 @@ if [[ $IS_MAC ]]; then
     do
       [[ -f "$file" ]] && source "$file"
     done
-  fi
-
-# Fink installed?
-  if [[ -d /sw ]]; then
-    export CFLAGS="-I/sw/include"
-    export LDFLAGS="-L/sw/lib"
-    export CXXFLAGS=$CFLAGS
-    export CPPFLAGS=$CXXFLAGS
-    export ACLOCAL_FLAGS="-I /sw/share/aclocal"
-    export PKG_CONFIG_PATH="/sw/lib/pkgconfig"
-    export MACOSX_DEPLOYMENT_TARGET=10.4
-    prepend_path /sw/bin
-    if [[ $ROOTGROUP ]]; then
-      prepend_path /sw/sbin
-    fi
-  fi
-
-# Mac Ports?
-  if [[ -d /opt/local ]]; then
-    prepend_path /opt/local/bin
-    if [[ $ROOTGROUP ]]; then
-      prepend_path /opt/local/sbin
-    fi
-    MANPATH="/opt/local/share/man:$MANPATH"
-    export QTDIR=/opt/local/lib/qt3
-  fi
-  append_path /usr/libexec
-
-  if [[ -e /usr/bin/open-x11 ]]; then
-    /usr/bin/open-x11
-    if [[ ! $DISPLAY ]]; then
-      export DISPLAY=':0.0'
-      LOCAL_X=1
-    fi
   fi
 
 fi
