@@ -17,7 +17,7 @@ fi
 
 if [[ -d "/usr/local/opt/python/libexec/bin" ]]; then
     # homebrew python
-    export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+    export PATH="$(brew --prefix)/opt/python/libexec/bin:$PATH"
 fi
 
 #
