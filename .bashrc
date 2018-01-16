@@ -416,3 +416,8 @@ fi
 # And finally even more, just in case
   [[ -f ~/.bashrc_custom ]] && source ~/.bashrc_custom
 
+
+# Lastly, init direnv
+  if [[ $(command -v direnv) ]]; then
+    eval "$(direnv hook bash)"
+  fi
