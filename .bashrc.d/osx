@@ -15,19 +15,18 @@ if [[ -d "/Applications/Sublime Text.app/Contents/SharedSupport/bin" ]]; then
     export PATH="$PATH:/Applications/Sublime Text.app/Contents/SharedSupport/bin"
 fi
 
-if [[ -d "/usr/local/opt/python/libexec/bin" ]]; then
+if [[ -d "$(brew --prefix)/opt/python/libexec/bin" ]]; then
     # homebrew python
     export PATH="$(brew --prefix)/opt/python/libexec/bin:$PATH"
 fi
 
 #
 # Aliases for some commonly-used apps
-alias komodo='open -a "Komodo Edit.app"'
 alias chrome='open -a "Google Chrome.app"'
-alias eclipse='open -a "Eclipse.app"'
 alias phpstorm='open -a "PhpStorm.app"'
 alias idea='open -a "IntelliJ IDEA 14.app"'
 alias sublime='open -a "Sublime Text.app"'
+alias pycharm='open -a "PyCharm.app"'
 
 #
 #
