@@ -1,9 +1,16 @@
+# Someday I'll update this config for Linux...
+if [[ ! $IS_MAC ]]; then
+  return
+fi
+
+# homebrew general config for python
 export PATH=$(brew --prefix)/bin:$PATH
 export PATH="$(brew --prefix)/opt/python/libexec/bin:$PATH"
+
+# virtualenvwrapper config
 export WORKON_HOME=$HOME/.virtualenvs
 export VIRTUALENVWRAPPER_PYTHON="$(brew --prefix)/opt/python/libexec/bin/python"
 export VIRTUALENVWRAPPER_VIRTUALENV="$(brew --prefix)/bin/virtualenv"
 export VIRTUALENVWRAPPER_VIRTUALENV_ARGS="--no-site-packages"
 export PIP_DOWNLOAD_CACHE=$HOME/.pip_download_cache
 source $(brew --prefix)/bin/virtualenvwrapper.sh
-
