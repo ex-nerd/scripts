@@ -1,6 +1,0 @@
-
-if [[ -e "${HOME}/.iterm2_shell_integration.bash" ]]; then
-    source "${HOME}/.iterm2_shell_integration.bash"
-else
-    echo "No iterm integration.  Please install via iTerm2 menu"
-fi

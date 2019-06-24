@@ -348,8 +348,11 @@
   # Update JAVA_HOME, too
     JAVA_HOME="`dirname \`dirname \\\`which java2 2>/dev/null\\\` 2>/dev/null\` 2>/dev/null`"
 
+    export LC_ALL=$LANG
+
   #Export proper case-sensitive language sorting
     export LC_COLLATE=C
+
 
   # Preferred editor settings
     export EDITOR=`find_program vim vi nano`
@@ -416,8 +419,20 @@ fi
 # And finally even more, just in case
   [[ -f ~/.bashrc_custom ]] && source ~/.bashrc_custom
 
+# Init some NVM stuff
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Lastly, init direnv
+# init direnv
   if [[ $(command -v direnv) ]]; then
     eval "$(direnv hook bash)"
   fi
+
+# Lastly, init iterm2 shell integration
+  if [[ -e "${HOME}/.iterm2_shell_integration.bash" ]]; then
+      source "${HOME}/.iterm2_shell_integration.bash"
+  else
+      echo "No iterm integration.  Please install via iTerm2 menu"
+  fi
+
