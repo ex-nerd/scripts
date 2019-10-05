@@ -85,13 +85,23 @@ cask 'font-dosis'
 cask 'imageoptim'
 cask 'imagealpha'
 cask 'handbrake'
+cask 'makemkv'
 cask 'vlc'
 cask 'plex'
 
+# cask 'bettertouchtool' # prefer to manage manually
+# cask 'iterm2-beta' # prefer to manage manually
+
+# cask 'prusaslicer' # prefer to install manually for betas
+cask 'openscad-snapshot'
 cask 'meshlab'
 cask 'meshmixer'
 
 cask 'discord'
+# cask 'openemu' # exists but I don't want it at the moment
+
+cask 'tor-browser'
+
 cask 'inkscape'
 cask 'libreoffice'
 
