@@ -103,6 +103,7 @@ cask 'meshmixer'
 cask 'discord'
 # cask 'openemu' # exists but I don't want it at the moment
 
+cask 'xquartz'
 cask 'inkscape'
 cask 'libreoffice'
 
