@@ -1,6 +1,13 @@
 #!/usr/bin/env brew bundle install
 # Yes, that shebang is magic.  Just execute this file via ./Brewfile to make it work.
 
+# Lots of helpful setup info here: https://openfolder.sh/macos-migrations-with-brewfile
+
+tap 'homebrew/cask'
+tap 'homebrew/cask-versions'
+tap 'mas-cli/tap'
+tap 'homebrew/cask-fonts'
+
 brew 'coreutils'
 brew 'gnu-sed'  # --with-default-names
 brew 'findutils'  # --with-default-names
@@ -47,15 +54,23 @@ brew 'mas'
 # for photorec, memory card un-deleter
 brew 'testdisk'
 
-# http://www.kodiakskorner.com/log/258
+# Install Mac App Store apps first, since we prefer these over casks
 
+mas 'Airmail', id: 918858936
+mas 'Better Rename 9', id: 414209656
+mas 'Deliveries', id: 924726344
+mas 'Fantastical', id: 975937182
+mas 'Gemini 2', id: 1090488118
+mas 'PCalc', id: 403504866
+mas 'Pixelmator Pro', id: 1289583905
+mas 'Slack', id: 803453959
+mas 'SSH Tunnel Manager', id: 424470626
+mas 'Textual IRC Client', id: 1262957439
+mas 'The Unarchiver', id: 425424353
+mas 'Xcode', id: 497799835
 
-# http://lapwinglabs.com/blog/hacker-guide-to-setting-up-your-mac
+# Fonts
 
-tap 'homebrew/cask'
-tap 'homebrew/cask-versions'
-
-tap 'homebrew/cask-fonts'
 cask 'font-hack'
 cask 'font-fira-code'
 cask 'font-monoid'
@@ -63,11 +78,29 @@ cask 'font-source-code-pro'
 # for seagl program
 cask 'font-dosis'
 
-
+# List of all cask apps (truncated by github display):
 # https://github.com/caskroom/homebrew-cask/tree/master/Casks
+# Search via: `brew search --casks`
+
+cask 'imageoptim'
+cask 'imagealpha'
+cask 'handbrake'
+cask 'vlc'
+cask 'plex'
+
+cask 'meshlab'
+cask 'meshmixer'
+
+cask 'discord'
+cask 'inkscape'
+cask 'libreoffice'
 
 # This includes the betterzipql plugin, too
 cask 'betterzip'
+
+# This includes an app and an installer-package ql plugin
+# https://www.mothersruin.com/software/SuspiciousPackage/
+cask 'suspicious-package'
 
 # Great list of QL plugins via https://github.com/sindresorhus/quick-look-plugins
 # See also https://www.quicklookplugins.com/
@@ -80,7 +113,6 @@ cask 'qlprettypatch'
 cask 'quicklook-csv'
 cask 'qlimagesize'
 cask 'webpquicklook'
-cask 'suspicious-package'
 cask 'quicklookase'
 cask 'qlvideo'
 #  sad..  no longer available: cert-quicklook
