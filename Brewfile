@@ -10,6 +10,7 @@ brew 'direnv'
 brew 'pv'
 
 brew 'git'
+brew 'git-lfs'
 brew 'hub'
 brew 'bash'
 brew 'bash-completion'
@@ -38,6 +39,9 @@ brew 'nano'
 # for json parsing via bash
 brew 'jq'
 
+# For mac app store stuff (including later in this file)
+brew 'mas'
+
 # for photorec, memory card un-deleter
 brew 'testdisk'
 
@@ -46,10 +50,10 @@ brew 'testdisk'
 
 # http://lapwinglabs.com/blog/hacker-guide-to-setting-up-your-mac
 
-tap 'caskroom/cask'
-tap 'caskroom/versions'
+tap 'homebrew/cask'
+tap 'homebrew/cask-versions'
 
-tap 'caskroom/fonts'
+tap 'homebrew/cask-fonts'
 cask 'font-hack'
 cask 'font-fira-code'
 cask 'font-monoid'
@@ -78,3 +82,4 @@ cask 'suspicious-package'
 cask 'quicklookase'
 cask 'qlvideo'
 #  sad..  no longer available: cert-quicklook
+
