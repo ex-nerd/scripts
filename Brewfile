@@ -88,6 +88,9 @@ cask 'handbrake'
 cask 'makemkv'
 cask 'vlc'
 cask 'plex'
+cask 'steam'
+
+cask 'tor-browser'
 
 # cask 'bettertouchtool' # prefer to manage manually
 # cask 'iterm2-beta' # prefer to manage manually
@@ -100,10 +103,11 @@ cask 'meshmixer'
 cask 'discord'
 # cask 'openemu' # exists but I don't want it at the moment
 
-cask 'tor-browser'
-
 cask 'inkscape'
 cask 'libreoffice'
+
+cask 'visual-studio-code'
+cask 'sublime-text'
 
 # This includes the betterzipql plugin, too
 cask 'betterzip'
