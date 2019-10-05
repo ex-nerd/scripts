@@ -8,6 +8,8 @@ brew 'grep'  # --with-default-names
 brew 'progress'  # https://github.com/Xfennec/progress
 brew 'direnv'
 brew 'pv'
+#brew 'tee'  # No brew for this (it's built-in)
+brew 'pwgen'
 
 brew 'git'
 brew 'git-lfs'
