@@ -67,7 +67,7 @@ mas 'Slack', id: 803453959
 mas 'SSH Tunnel Manager', id: 424470626
 mas 'Textual IRC Client', id: 1262957439
 mas 'The Unarchiver', id: 425424353
-mas 'Xcode', id: 497799835
+# mas 'Xcode', id: 497799835 # Don't really need xcode everywhere
 
 # Fonts
 
