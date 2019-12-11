@@ -13,9 +13,10 @@ export PATH=$(brew --prefix)/bin:$PATH
 #export VIRTUALENVWRAPPER_VIRTUALENV="$(brew --prefix)/bin/virtualenv"
 #export VIRTUALENVWRAPPER_VIRTUALENV_ARGS="--no-site-packages"
 export PIP_DOWNLOAD_CACHE=$HOME/.pip_download_cache
-if [[ -f $(brew --prefix)/bin/virtualenvwrapper.sh ]]; then
-    source $(brew --prefix)/bin/virtualenvwrapper.sh
-fi
+
+#if [[ -f $(brew --prefix)/bin/virtualenvwrapper.sh ]]; then
+#    source $(brew --prefix)/bin/virtualenvwrapper.sh
+#fi
 
 # These are needed to get python autoformatting working with vscode
 LC_ALL=en_US.UTF-8
