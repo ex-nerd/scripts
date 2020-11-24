@@ -68,7 +68,7 @@
   OS=
   VERSION=
 
-  if which uname &> /dev/null; then
+  if command -v uname &> /dev/null; then
     OS=`uname`
   fi
 
@@ -160,7 +160,7 @@
 # Return the first program from the argument list that exists in the execution path
   find_program() {
     for file in $*; do
-      if which "$file" &>/dev/null; then
+      if command -v "$file" &>/dev/null; then
         echo "$file"
         return
       fi
@@ -285,7 +285,7 @@
 # Use gnu utilities if they're available
   if [[ $IS_SUN || $IS_MAC ]]; then
     for APP in grep find tar sed xargs; do
-      if which g$APP &> /dev/null; then
+      if command -v g$APP &> /dev/null; then
         alias $APP=g$APP
       fi
     done
@@ -297,24 +297,16 @@
   export GREP_OPTIONS=
 
 # Ignore certain directory patterns
-  if grep --help | grep -- --exclude-dir= &> /dev/null; then
-    export GREP_OPTIONS="--exclude-dir=.svn $GREP_OPTIONS"
-    export GREP_OPTIONS="--exclude-dir=.git $GREP_OPTIONS"
-    export GREP_OPTIONS="--exclude-dir=CVS $GREP_OPTIONS"
-  elif grep --help | grep -- --exclude= &> /dev/null; then
-    export GREP_OPTIONS="--exclude='*.svn*' $GREP_OPTIONS"
-    export GREP_OPTIONS="--exclude='*.git*' $GREP_OPTIONS"
-    # would like to exclude CVS here, but it's too generic without slashes
-  fi
+  export GREP_OPTIONS="--exclude-dir=.svn $GREP_OPTIONS"
+  export GREP_OPTIONS="--exclude-dir=.git $GREP_OPTIONS"
+  export GREP_OPTIONS="--exclude-dir=CVS $GREP_OPTIONS"
 
 # Turn on grep colorization
-  if echo hello | grep --color=auto l &>/dev/null 2>&1; then
-    export GREP_OPTIONS="--color=auto $GREP_OPTIONS"
-    export GREP_COLOR='0;32'
-  fi
+  export GREP_OPTIONS="--color=auto $GREP_OPTIONS"
+  export GREP_COLOR='0;32'
 
   # Apply the options without using the now-deprecated env var
-  if which ggrep &> /dev/null; then
+  if command -v ggrep &> /dev/null; then
     alias grep="ggrep $GREP_OPTIONS"
   else
     alias grep="grep $GREP_OPTIONS"
@@ -346,7 +338,7 @@
   if [[ $IS_LINUX || $IS_SUN ]]; then
 
   # Update JAVA_HOME, too
-    JAVA_HOME="`dirname \`dirname \\\`which java2 2>/dev/null\\\` 2>/dev/null\` 2>/dev/null`"
+    JAVA_HOME="`dirname \`dirname \\\`command -v java2 2>/dev/null\\\` 2>/dev/null\` 2>/dev/null`"
 
     export LC_ALL=$LANG
 
@@ -381,7 +373,7 @@
 if [[ $IS_MAC ]]; then
 
 # Turn on bash-completion for macs
-  if which brew > /dev/null; then
+  if command -v brew > /dev/null; then
     for file in \
       $(brew --prefix)/etc/bash_completion \
       $(brew --prefix)/etc/bash_completion.d/brew
@@ -402,7 +394,11 @@ fi
 # Load any custom extensions
   if [[ -d ~/.bashrc.d ]]; then
     for file in ~/.bashrc.d/*; do
-      if [[ ${file:$((${#file}-4)):4} == '.loc' ]]; then
+      if [[ -d "$file" ]]; then
+        continue
+      elif [[ ${file:$((${#file}-9)):9} == '.disabled' ]]; then
+        continue
+      elif [[ ${file:$((${#file}-4)):4} == '.loc' ]]; then
         if [[ $file == ~/.bashrc.d/"$LOCATION".loc ]]; then
           source "$file"
         fi
