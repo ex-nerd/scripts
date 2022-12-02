@@ -56,7 +56,7 @@
     stat = status
     # Cleanup
     cleanup = !git_cleanup # remove already-merged branches that have not changed in a month
-    pruneall = "!git fetch origin --prune --tags; git remote prune origin"
+    pruneall = "!git fetch origin --prune --tags -f; git remote prune origin"
     # Search/Log
     logn = log --decorate --name-status
     logp = log --patch
