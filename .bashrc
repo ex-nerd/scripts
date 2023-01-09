@@ -234,14 +234,32 @@
 # Allow control-D to log out
   unset ignoreeof
 
+# Enable hist-append
+  shopt -s histappend
+
 # History length
-  export HISTSIZE=2500
+  export HISTFILESIZE=100000
+  export HISTSIZE=200000
+
+# Give the time in the history file
+  export HISTTIMEFORMAT="%F %T "
 
 # Ignore duplicate history entries and those starting with whitespace
   export HISTCONTROL=ignoreboth
 
 # Prevent certain commands from cluttering the history
   export HISTIGNORE="&:l:ls:ll:[bf]g:clear:exit:history:history *:history|*:cd:cd -:df"
+
+# Update the bash history after every command rather then the end of the session
+if [[ "${PROMPT_COMMAND}" == *\; ]]
+then
+  export PROMPT_COMMAND="${PROMPT_COMMAND} history -a"
+elif [[ -n "${PROMPT_COMMAND}" ]]
+then
+  export PROMPT_COMMAND="${PROMPT_COMMAND}; history -a"
+else
+  export PROMPT_COMMAND="history -a"
+fi
 
 # Enable spellchecking/guessing for cd commands (useful for typo'd pathnames)
   shopt -s cdspell
@@ -316,6 +334,8 @@
 # Prepare the ls color options
   if [[ $IS_MAC ]]; then
     export CLICOLOR=1
+  else
+    export CLICOLOR=true
   fi
   for file in /etc/DIR_COLORS ~/.dir_colors; do
     if [[ -f "$file" ]]; then
