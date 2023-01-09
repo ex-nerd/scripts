@@ -1,5 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import sys, urllib
+import sys
+from urllib.parse import unquote_plus
 
-print urllib.unquote(sys.argv[1])
+print(unquote_plus(sys.argv[1]))
