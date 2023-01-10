@@ -321,7 +321,7 @@ fi
 
 # Turn on grep colorization
   export GREP_OPTIONS="--color=auto $GREP_OPTIONS"
-  export GREP_COLOR='0;32'
+  # export GREP_COLORS='mt=0;32'
 
   # Apply the options without using the now-deprecated env var
   if command -v ggrep &> /dev/null; then
