@@ -18,7 +18,15 @@ fi
 #
 
   alias gitlog='git logn'
-  alias gg='git grep --color=always'
+  alias gg='git grep'
+  function gf() {
+    if [[ ! -z $1 ]]; then
+      git ls-files | grep "$@"
+    else
+      git ls-files
+    fi
+  }
+  export -f gf
 
 #
 # git_cleanup is intended to be attached to a git alias.
