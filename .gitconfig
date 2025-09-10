@@ -2,23 +2,29 @@
     name = Chris Petersen
 [core]
     whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
-    excludesfile = $HOME/.gitignore
-[http]
-    sslVerify = false
+    excludesfile = $HOME/.gitignore_global
+    pager = delta
+# [http]
+#     sslVerify = false
+[init]
+    defaultBranch = main
+[gpg]
+    format = ssh
+[gpg "ssh"]
+    allowedSignersFile = $HOME/.ssh/allowed_signers
+[commit]
+    gpgsign = true
 [branch]
-    autosetupmerge = true
+    autosetupmerge = simple
+    autosetuprebase = always
 [push]
-    default = tracking
+    default = current
 [pull]
     default = rebase
-[difftool "sourcetree"]
-    cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-    path =
+    rebase = true
 [merge]
-    tool = vimdiff
-[mergetool "sourcetree"]
-    cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-    trustExitCode = true
+    # tool = vimdiff
+    conflictStyle = zdiff3
 [color]
     branch = auto
     diff = auto
@@ -47,26 +53,64 @@
     untracked = cyan
 [alias]
     br = branch
+    branchlog = "!git log $(git rev-parse --not --branches | grep -v $(git rev-parse $1)) $1"
     ci = commit
+    cleanup = !git_cleanup
     co = checkout
     dc = diff --cached
     dif = diff
-    mergenoff = merge --no-ff
-    st = status
-    stat = status
-    # Cleanup
-    cleanup = !git_cleanup # remove already-merged branches that have not changed in a month
-    pruneall = "!git fetch origin --prune --tags -f; git remote prune origin"
-    # Search/Log
-    logn = log --decorate --name-status
-    logp = log --patch
+    logn = log --name-status
+    logp = log -p
     new = "!git log $(ref=$(git symbolic-ref HEAD); echo $(git config -z --get branch.${ref##refs/heads/}.remote)/$(rbranch=$(git config --get branch.${ref##refs/heads/}.merge); echo ${rbranch##refs/heads/})).."
     only = !git_only
+    pruneall = "!git fetch origin --prune --tags; git remote prune origin"
+    st = status
+    stat = status
     wheres=branch -a --contains
-    # branch per feature: https://rubygems.org/gems/git_bpf
-    newqa="!_git-bpf recreate-branch qa"
-    forceqa=push --force origin qa
-[credential]
-    helper = osxkeychain
-[rerere]
-    enabled = true
+    bpush = "!git push --set-upstream origin $(git describe --contains --all HEAD)"
+    permission-reset = "!git diff -p | grep -E \"^(diff|old mode|new mode)\" | sed -e \"s/^old/NEW/;s/^new/old/;s/^NEW/new/\" | git apply"
+    # Originals (not using delta)
+    bbranch = -c core.pager='less -F' branch
+    blog = -c core.pager='less -F' log
+    bshow = -c core.pager='less -F' show
+    bdiff = -c core.pager='less -F' diff
+    bblame = -c core.pager='less -F' blame
+    bgrep = -c core.pager='less -F' grep
+    # side-by-side using delta
+    slog = -c core.pager=delta -c delta.side-by-side=true log
+    sshow = -c core.pager=delta -c delta.side-by-side=true show
+    sdiff = -c core.pager=delta -c delta.side-by-side=true diff
+    sblame = -c core.pager=delta -c delta.side-by-side=true blame
+    dlog = -c core.pager=delta -c delta.side-by-side=false log
+    dshow = -c core.pager=delta -c delta.side-by-side=false show
+    ddiff = -c core.pager=delta -c delta.side-by-side=false diff
+[diff]
+    algorithm = histogram
+    colorMoved = default
+    colormovedws = allow-indentation-change
+    mnemonicPrefix = true
+    renames = true
+[filter "lfs"]
+    process = git-lfs filter-process
+    required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+[interactive]
+    diffFilter = delta --color-only
+[delta]
+    hyperlinks = true
+    hyperlinks-file-link-format = "vscode://file/{path}:{line}"
+    navigate = true
+    side-by-side = false
+    line-numbers = true
+    syntax-theme = zenburn
+    file-style = 'deepskyblue italic ul'
+    file-decoration-style = 'deepskyblue ul'
+    hunk-header-decoration-style = 'deepskyblue box'
+    hunk-header-file-style = 'deepskyblue'
+    hunk-header-line-number-style = 'deepskyblue'
+    inline-hint-style = 'deepskyblue'
+    line-numbers-left-style = 'deepskyblue'
+    line-numbers-right-style = 'deepskyblue'
+    # kill switch for color-moved support (it looks like crap)
+    inspect-raw-lines = false
