@@ -296,6 +296,8 @@ fi
     prepend_path "$dir"
   done
 
+  prepend_path ~/.local/bin
+
 #
 # Now that we have altered $PATH, make a few other environment-specific tweaks
 #
