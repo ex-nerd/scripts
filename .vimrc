@@ -1,3 +1,5 @@
+execute pathogen#infect()
+
 " Turn off compatibility mode
 set nocompatible
 
@@ -15,9 +17,8 @@ set showmatch
 set mouse=
 
 " Indent engines
-filetype indent on
+filetype plugin indent on
 
-set background=dark
 set backspace=indent,eol,start    " allow backspace over anything in insert mode
 
 "
@@ -50,10 +51,11 @@ if has("autocmd")
 
 endif
 
-" Switch syntax highlighting on when the terminal has colors.
 " Also switch on highlighting the last used search pattern.
-if &t_Co > 2 || has("gui_running")
-    syntax on
-    set hlsearch
-endif
+set hlsearch
 
+" Enable syntax lighlighting and the solarized theme
+syntax enable
+set background=dark
+" let g:solarized_termcolors=256
+colorscheme solarized
