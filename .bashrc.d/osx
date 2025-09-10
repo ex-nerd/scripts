@@ -28,6 +28,9 @@ alias idea='open -a "IntelliJ IDEA 14.app"'
 alias sublime='open -a "Sublime Text.app"'
 alias pycharm='open -a "PyCharm.app"'
 
+# Install brew cask programs to bypass quarantine
+export HOMEBREW_CASK_OPTS="--no-quarantine"
+
 #
 #
 alias macsleep='osascript -e '\''tell application "System Events" to sleep'\'''

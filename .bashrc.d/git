@@ -64,6 +64,16 @@ fi
   export -f git_only
 
 #
+# Given a file path, it lists all remote branches that have modified that path
+#
+  function git_file_branches() {
+    echo -e "date\tbranch\tauthor"
+    for BRANCH in $(git log --remotes --no-merges --not develop --source --decorate=short -- $1 | grep ^commit | cut -f 2 | uniq); do
+      git log -1 --date=format-local:'%Y-%m-%d %H:%M:%S' --pretty=format:"%ad%x09%D%x09%an <%ae>" $BRANCH 2>/dev/null | sort
+    done
+  }
+
+#
 # Install our functions.  These do not auto-run because they are only needed once,
 # and in case users want to apply them only to a specific git clone.
 #

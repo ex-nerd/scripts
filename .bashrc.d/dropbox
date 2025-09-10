@@ -1,3 +1,5 @@
 
 alias clean_dropbox="find ~/Dropbox -name '* conflicted copy *' -exec rm {} \+"
 
+# find . -type d -name ".direnv" -exec xattr -w com.dropbox.ignored 1 {} \+
+# find . -type d -name ".git" -exec xattr -w com.dropbox.ignored 1 {} \+
