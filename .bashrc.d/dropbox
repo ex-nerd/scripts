@@ -1,5 +1,17 @@
 
-alias clean_dropbox="find ~/Dropbox -name '* conflicted copy *' -exec rm {} \+"
+alias clean_dropbox="find ~/Dropbox/ -name '* conflicted copy *' -exec rm {} \+"
 
-# find . -type d -name ".direnv" -exec xattr -w com.dropbox.ignored 1 {} \+
-# find . -type d -name ".git" -exec xattr -w com.dropbox.ignored 1 {} \+
+function fix_dropbox_ignored() {
+    gfind ~/Dropbox/ \
+        -type d \( \
+            -name "__pycache__"  \
+            -o -name ".pytest*" \
+            -o -name ".direnv" \
+            -o -name ".venv" \
+            -o -name ".git" \
+            -o -name "*.egg-info" \
+            -o -name "*.*_cache" \
+        \) \
+        -exec xattr -w com.dropbox.ignored {} \+ \
+        -exec echo {} \;
+}
