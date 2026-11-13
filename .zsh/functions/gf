@@ -1,0 +1,9 @@
+#!/bin/bash
+# This script operates like "find -type f" but only files tracked by git.
+# Would prefer to use fd but it doesn't have a way to filter by git-tracked files.
+
+if [[ -n "$1" ]]; then
+    git ls-files "*$1*"
+else
+    git ls-files
+fi

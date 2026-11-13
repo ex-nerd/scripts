@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# Given a file path, it lists all remote branches that have modified that path
+#
+
+echo -e "date\tbranch\tauthor"
+for BRANCH in $(git log --remotes --no-merges --not develop --source --decorate=short -- $1 | grep ^commit | cut -f 2 | uniq); do
+    git log -1 --date=format-local:'%Y-%m-%d %H:%M:%S' --pretty=format:"%ad%x09%D%x09%an <%ae>" $BRANCH 2>/dev/null | sort
+done

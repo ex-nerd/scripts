@@ -23,7 +23,7 @@ from collections import OrderedDict
 
 
 def timestr(secs):
-    (secs, ms) = str(secs).split(".")
+    secs, ms = str(secs).split(".")
     ms = float(ms[0:3] + "." + ms[3:])
     secs = int(secs)
     hours = int(secs // 3600)
@@ -50,7 +50,7 @@ def load_mp3(total, dir, file):
     )
     chapters = []
     for chapter in file_chapters:
-        (name, length) = chapter
+        name, length = chapter
         name = re.sub(r'^"(.+)"$', r"\1", name)
         name = re.sub(r"^\*(.+)\*$", r"\1", name)
         name = re.sub(
@@ -86,7 +86,7 @@ def visit(dirname, filenames):
     all_chapters = OrderedDict()
     for file in sorted(filenames):
         if file.endswith(".mp3"):
-            (total, chapters) = load_mp3(total, dirname, file)
+            total, chapters = load_mp3(total, dirname, file)
             # print(repr(chapters))
             for chapter in chapters:
                 if chapter[0] in all_chapters.keys():

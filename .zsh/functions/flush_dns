@@ -1,0 +1,60 @@
+#!/bin/bash
+
+case "$OSTYPE" in
+    darwin*)
+        echo "Detected macOS. Flushing DNS cache..."
+        sudo dscacheutil -flushcache
+        sudo killall -HUP mDNSResponder
+        echo "macOS DNS cache flushed successfully."
+        ;;
+    linux*)
+        echo "Detected Linux. Checking for DNS caching services..."
+        
+        typeset FLUSHED=false
+
+        # 1. Check for systemd-resolved (resolvectl)
+        if command -v resolvectl &> /dev/null; then
+            sudo resolvectl flush-caches
+            echo "-> Flushed cache using resolvectl (systemd-resolved)."
+            FLUSHED=true
+        elif command -v systemd-resolve &> /dev/null; then
+            sudo systemd-resolve --flush-caches
+            echo "-> Flushed cache using systemd-resolve."
+            FLUSHED=true
+        fi
+
+        # 2. Check for nscd (Name Service Cache Daemon)
+        if systemctl list-units --full --all 2>/dev/null | grep -Fq "nscd.service"; then
+            sudo systemctl restart nscd
+            echo "-> Restarted nscd service."
+            FLUSHED=true
+        fi
+
+        # 3. Check for dnsmasq
+        if systemctl list-units --full --all 2>/dev/null | grep -Fq "dnsmasq.service"; then
+            sudo systemctl restart dnsmasq
+            echo "-> Restarted dnsmasq service."
+            FLUSHED=true
+        fi
+
+        # 4. Fallback to NetworkManager if nothing else caught
+        if [ "$FLUSHED" = false ]; then
+            if systemctl list-units --full --all 2>/dev/null | grep -Fq "NetworkManager.service"; then
+                sudo systemctl restart NetworkManager
+                echo "-> Restarted NetworkManager service."
+                FLUSHED=true
+            fi
+        fi
+
+        if [ "$FLUSHED" = false ]; then
+            echo "Warning: Could not automatically detect a standard DNS caching service."
+            echo "You may need to restart your local resolver manually depending on your distro."
+        else
+            echo "Linux DNS flush complete."
+        fi
+        ;;
+    *)
+        echo "Unsupported operating system: $OSTYPE"
+        return 1 2>/dev/null || exit 1
+        ;;
+esac

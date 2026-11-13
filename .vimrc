@@ -1,4 +1,4 @@
-execute pathogen#infect()
+" execute pathogen#infect()
 
 " Turn off compatibility mode
 set nocompatible
@@ -58,4 +58,4 @@ set hlsearch
 syntax enable
 set background=dark
 " let g:solarized_termcolors=256
-colorscheme solarized
+" colorscheme solarized

@@ -1,0 +1,26 @@
+# Yes, we want to search things in .gitignore
+--no-ignore
+
+# Search hidden dotfiles by default
+--hidden
+
+# Always exclude specific hidden files/directories
+
+# Skip unwanted files
+--glob=!.DS_Store
+
+# Version Control & IDEs
+--glob=!.git/
+--glob=!.idea/
+--glob=!.svn/
+--glob=!CVS/
+    
+# Python & Environments
+--glob=!__pycache__/
+--glob=!.venv/
+--glob=!node_modules/
+    
+# Caches
+--glob=!.cache/
+--glob=!.direnv/
+--glob=!.*_cache/

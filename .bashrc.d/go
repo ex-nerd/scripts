@@ -1,4 +1,0 @@
-
-if [[ -d "$HOME/go" ]]; then
-    export GOPATH="${GOPATH:+"${GOPATH}:"}$HOME/go"
-fi

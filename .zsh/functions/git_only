@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+# git_only intended to be attached to a git alias.
+# Given a branch name, it will show you a log of commits that only exist on that one branch.
+#
+# Credit to https://github.com/cxreg
+#
+
+opts=$(git rev-parse --no-revs "$@" 2>/dev/null)
+rev=$(git rev-parse --revs-only "$@" 2>/dev/null)
+if [[ -z $rev ]]; then
+    branch=$(git name-rev --name-only HEAD)
+else
+    branch=$rev
+fi
+git log $(git rev-parse --not --remotes --branches | grep -v $(git rev-parse $branch)) $branch $opts

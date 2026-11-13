@@ -1,0 +1,45 @@
+#!/bin/bash
+#
+# git_cleanup is intended to be attached to a git alias.
+# It will remove any remote (origin) branches that have already been merged into
+# master, and have remained untouched for at least a month, after asking for confirmation.
+#
+# Credit to https://github.com/cxreg and (Gemini for modernizing it)
+#
+
+branches_to_delete=()
+
+# Find branches merged into master and untouched for over a month
+for branch in $(git branch -r --merged origin/master | grep '\<origin/' | grep -v '\<origin/master\>'); do
+    if [[ -z $(git rev-list "$branch" --since='1 month') ]]; then
+        name=$(echo "$branch" | sed 's/^origin\///')
+        branches_to_delete+=("$name")
+    fi
+done
+
+# Exit if no branches match the criteria
+if [ ${#branches_to_delete[@]} -eq 0 ]; then
+    echo "No old merged branches found to delete."
+    return 0
+fi
+
+# Preview the branches to be deleted
+echo "The following remote branches are merged into master and untouched for over a month:"
+for name in "${branches_to_delete[@]}"; do
+    echo "  - origin/$name"
+done
+
+echo ""
+read -p "Do you want to delete these branches? (y/N) " -n 1 -r
+echo ""
+
+# Execute deletion if confirmed
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    for name in "${branches_to_delete[@]}"; do
+        echo "Deleting origin/$name..."
+        git push --delete origin "$name"
+    done
+    echo "Cleanup complete."
+else
+    echo "Aborted. No branches were deleted."
+fi

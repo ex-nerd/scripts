@@ -1,0 +1,36 @@
+#!/bin/bash
+# Universal URL decoder (pure builtins, works in Bash and Zsh natively)
+
+typeset input="$1"
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: ${0##*/} <string>" >&2
+    return 1 2>/dev/null || exit 1
+fi
+
+typeset decoded=""
+typeset rest="$input"
+typeset char hex decoded_char
+
+# Process the string by stripping leading characters until empty
+while [[ -n "$rest" ]]; do
+    case "$rest" in
+        %[0-9a-fA-F][0-9a-fA-F]*)
+            # Extract the hex code from the first 3 characters (%XX)
+            hex="${rest:1:2}"
+            printf -v decoded_char '%b' "\\x$hex"
+            decoded+="$decoded_char"
+            # Advance past the 3 characters (%XX)
+            rest="${rest:3}"
+            ;;
+        *)
+            # Take the first character, append it, and advance by 1
+            # Note: This safe truncation works identically in both Bash and Zsh
+            char="${rest:0:1}"
+            decoded+="$char"
+            rest="${rest:1}"
+            ;;
+    esac
+done
+
+printf '%s\n' "$decoded"

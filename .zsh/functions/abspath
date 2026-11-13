@@ -1,0 +1,44 @@
+#!/bin/bash
+# Universal absolute path resolver (works in Bash and Zsh)
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: ${0##*/} <path>" >&2
+    return 1 2>/dev/null || exit 1
+fi
+
+typeset _target="$1"
+
+if [[ ! -e "$_target" ]]; then
+    echo "Error: '$_target' does not exist." >&2
+    return 1 2>/dev/null || exit 1
+fi
+
+# Short-circuit in Zsh using the :A modifier (absolute path + resolved symlinks)
+if [[ -n "${ZSH_VERSION:-}" ]]; then
+    echo "${_target:A}"
+    return 0 2>/dev/null || exit 0
+fi
+
+typeset _dir _base
+if [[ -d "$_target" ]]; then
+    # It's a directory: resolve its absolute physical path directly using builtins
+    _dir="$(cd -P -- "$_target" && pwd -P)"
+    echo "$_dir"
+else
+    # It's a file (or symlink): split parent and filename using pure parameter expansion
+    _base="${_target##*/}"
+    if [[ "$_target" == */* ]]; then
+        typeset _parent="${_target%/*}"
+        [[ -z "$_parent" ]] && _parent="/"
+        _dir="$(cd -P -- "$_parent" && pwd -P)"
+    else
+        _dir="$(cd -P -- "." && pwd -P)"
+    fi
+
+    # Print cleanly, preventing double slashes if _dir is root (/)
+    if [[ "$_dir" == "/" ]]; then
+        echo "/$_base"
+    else
+        echo "$_dir/$_base"
+    fi
+fi

@@ -1,0 +1,209 @@
+# Starship config
+# See: https://www.nerdfonts.com/cheat-sheet
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+$os\
+$username\
+$hostname\
+$directory\
+$direnv\
+$mise\
+$kubernetes\
+$git_branch\
+$git_commit\
+$git_state\
+$git_metrics\
+$git_status\
+$package\
+$golang\
+$nodejs\
+$perl\
+$php\
+$pulumi\
+$python\
+$rust\
+$terraform\
+$aws\
+$gcloud\
+$line_break\
+$shell\
+$character\
+"""
+
+# https://starship.rs/advanced-config/#enable-right-prompt
+right_format = """
+${env_var.MOUNT_ICON}\
+$status\
+$cmd_duration\
+$time\
+"""
+
+[cmd_duration]
+format = '⌛️ [$duration](bold yellow)' # or 
+# show_milliseconds = true
+
+# only in zsh: https://starship.rs/advanced-config/#continuation-prompt
+# continuation_prompt = '[∙](bright-black) '
+
+[character]
+# The standard symbol when your last command succeeds
+# success_symbol = "[╰─❯](bold green)"
+success_symbol = "[╰](bold green)"
+# success_symbol = "[╰─➤](bold green)"
+error_symbol = "[╰](bold red)"
+# The symbol shown if your last command exited with a non-zero error code
+# The symbol used when vim vicmd mode is active (if applicable)
+# vimcmd_symbol = "[❮](bold yellow)"
+
+[username]
+show_always = true
+style_user = "cyan"
+style_root = "bold red"
+format = '[$user]($style)'
+
+[hostname]
+ssh_symbol = " "
+# Always show the hostname, even on your local machine (default is true)
+ssh_only = false
+# Show the full domain name instead of cutting off at the first dot (default is false)
+# trim_at = ""
+# Customize the text and color
+format = "[@$hostname](blue): "
+
+[os]
+# style = "bg:#a3aed2 fg:#090c0c"
+format = "[$symbol]($style)"
+disabled = false
+
+[os.symbols]
+Alpine = " "
+Amazon = " "
+Android = " "
+CentOS = " "
+Debian = " "
+Fedora = " "
+Ios = "󰀷 "
+Linux = " "
+Macos = " "
+Raspbian = " "
+Redhat = "󱄛 "
+RedHatEnterprise = "󱄛 "
+Ubuntu = " "
+Unknown = " "
+Windows = "󰍲 "
+
+[aws]
+symbol = " "
+format = 'on [$symbol$profile]($style) '
+
+[nodejs]
+symbol = "[ ](bold green) "
+format = 'on [$symbol$profile]($style) '
+disabled = true
+
+[directory]
+read_only = " 󰌾"
+before_repo_root_style = "italic cyan"
+repo_root_style = "bold underline cyan"
+truncation_length = 5
+truncation_symbol = "…/"
+truncate_to_repo = false
+
+[directory.substitutions]
+# macOS external or network volumes under /Volumes/
+"/Volumes/photo/" = "󰒍 /Volumes/photo/"
+# Linux mount points under /mnt/ or /media/
+# "/mnt/data" = "💽 DataStorage"
+# "/media/username/USB-Drive" = "🔌 USB"
+
+[env_var.MOUNT_ICON]
+disabled = false
+# Display the value of MOUNT_ICON followed by a trailing space
+format = "[$env_value ]($style)"
+
+[time]
+disabled = true
+format = '🕙[\[ $time \]]($style) '
+time_format = '%T'
+utc_time_offset = '-5'
+# time_range = '10:00:00-14:00:00'
+
+[shell]
+disabled = true
+bash_indicator = " "
+zsh_indicator = " "
+format = "[$indicator]($style) "
+style = "cyan bold"
+
+# === BASH GLYPH OPTIONS (UNIVERSAL v2/v3) ===
+# nf-cod-terminal_bash (\uebca):  
+# nf-oct-terminal (\uf489):       
+
+# === ZSH GLYPH OPTIONS (UNIVERSAL v2/v3) ===
+# nf-fa-bolt (\uf0e7):            
+# nf-dev-terminal (\ue795):       
+
+[mise]
+disabled = false
+symbol = "󱧽 "
+healthy_symbol = "✓"
+unhealthy_symbol = "✗"
+style = "bold bright-purple"
+
+[direnv]
+symbol = "󱧽 "
+disabled = false
+format = '[$symbol$allowed]($style) '
+# format = '[$symbol$loaded/$allowed]($style) '
+style = 'bold bright-blue'
+# Status labels
+# loaded_msg = 'loaded'
+# unloaded_msg = 'not loaded'
+allowed_msg = '✓'
+not_allowed_msg = '✗'
+denied_msg = '✗'
+
+#
+# DEFAULTS BELOW THIS LINE
+#
+
+[gcloud]
+symbol = "󱇶 "
+
+[git_branch]
+symbol = " "
+
+[git_commit]
+tag_symbol = '  '
+
+[golang]
+symbol = " "
+
+[kubernetes]
+symbol = "󱃾 "
+
+[package]
+symbol = "󰏗 "
+
+[perl]
+symbol = " "
+
+[php]
+symbol = " "
+
+[pulumi]
+symbol = " "
+
+[python]
+symbol = " "
+
+[rust]
+symbol = "󱘗 "
+
+[status]
+symbol = " "
+
+[terraform]
+symbol = " "

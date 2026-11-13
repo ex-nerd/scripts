@@ -1,0 +1,38 @@
+#!/bin/bash
+# Universal URL encoder (works in Bash and Zsh using pure builtins)
+
+typeset input="$1"
+
+if [[ $# -eq 0 ]]; then
+    echo "Usage: ${0##*/} <string>" >&2
+    return 1 2>/dev/null || exit 1
+fi
+
+typeset encoded=""
+typeset rest="$input"
+typeset char hex
+
+# Process the string character-by-character using index-free parameter expansion
+while [[ -n "$rest" ]]; do
+    # Extract the very first character safely in both Bash and Zsh
+    char="${rest%"${rest#?}"}"
+    # Strip the first character from the remaining string
+    rest="${rest#?}"
+
+    case "$char" in
+        # Unreserved characters according to RFC 3986 remain untouched
+        [a-zA-Z0-9.~_-])
+            encoded+="$char"
+            ;;
+        *)
+            # Convert character to uppercase hex using built-in printf
+            if printf -v hex '%02X' "'$char" 2>/dev/null; then
+                encoded+="%${hex}"
+            else
+                encoded+="$char"
+            fi
+            ;;
+    esac
+done
+
+printf '%s\n' "$encoded"

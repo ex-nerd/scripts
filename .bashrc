@@ -1,35 +1,21 @@
 #!/bin/bash
 #
-# This file is sourced by all *interactive* bash shells on startup,
-# including some apparently interactive shells such as scp and rcp
-# that can't tolerate any output.
+# This file is sourced by all *interactive* bash shells on startup, including
+# some apparently interactive shells such as scp and rcp that can't tolerate any
+# output.
 #
-# It attempts to keep all settings completely generic so that any
-# user can install this without fear of any unusual aliases or
-# preferences being forced upon them.
+# It attempts to keep all settings completely generic so that any user can
+# install this without fear of any unusual aliases or preferences being forced
+# upon them.
 #
-# In order to allow for customization (and to allow the authors to
-# use this file along with some private aliases), this file will
-# source other sub-files if they exist, in the following order:
+# In order to allow for per-host customization, this file will source sub-files
+# ~/.bashrc.d/*.sh.
 #
-# ~/.bashrc.d/*
-#   A place to store extra configuration in order to keep this master .bashrc
-#   file as clean and generic as possible.  All files here will be included
-#   unless they are "location" files as described below.
+# Because I primarily use zsh, this will also source ~/.zsh/functions/* and
+# expose them as bash functions, similar to the zsh autoload mechanism.
 #
-# ~/.bashrc.d/"$LOCATION".loc
-#   This is intended for separating "home" and "work" settings.  $LOCATION is
-#   the main domain "word" for this host, i.e. example.loc for example.com.
-#   Included when at $LOCATION.
-#
-# ~/.bashrc.d/"$LOCATION".notloc
-#   Like *.loc but only included when not at $LOCATION.
-#
-# ~/.bashrc_custom
-#   This behaves like the files in ~/.bashrc.d, but is intended for custom
-#   settings specific to an individual host and as such will never be copied
-#   or overwritten by host-setup routines.
-#
+
+# shellcheck disable=SC1090 disable=SC1091
 
 ###############################################################################
 # Test for an interactive shell.  There is no need to set anything past this
@@ -37,420 +23,418 @@
 # in those cases.  However, we should add a couple of extra paths in case this
 # is rsync (in case rsync itself is stored somewhere like /usr/local/bin).
 
-  if [[ "$-" != *i* ]]; then
-    for dir in /usr/*/bin/ /opt/*/bin/; do
-      export PATH="$PATH:$dir"
-    done
-    return
-  fi
+if [[ "$-" != *i* ]]; then
+  for dir in /usr/*/bin/ /opt/*/bin/; do
+    export PATH="$PATH:$dir"
+  done
+  return
+fi
 
 ###############################################################################
 # Source any global definitions that exist
 #
-  for file in \
-    /etc/*bashrc /etc/profile /etc/bash/bashrc \
-    ~/.bash_aliases \
+for _file in \
+    /etc/*bashrc \
+    /etc/profile \
+    /etc/bash/bashrc \
     /etc/bash_completion \
-    /sw/bin/init.sh
-  do
-    [[ -f "$file" ]] && source "$file"
-  done
+    ; do
+  [[ -f "$_file" ]] && source "$_file"
+done
+unset _file
 
 ###############################################################################
-# Setup some global information about the environment
+# Collect information about the environment and the current user, which will
+# be used throughout this configuration file and then cleared at the end.
 #
 
-# Figure out what os/distro we are on
-  IS_MAC=
-  IS_LINUX=
-  IS_SUN=
-  DISTRO=
-  OS=
-  VERSION=
+typeset _is_mac=""
+typeset _is_linux=""
+typeset _is_admin=""
+typeset _user_groups=""
 
-  if command -v uname &> /dev/null; then
-    OS=`uname`
-  fi
+if command -v id &> /dev/null; then
+  _user_groups=" $(id -nG) "
+fi
 
-  if [[ "$OS" == 'Darwin' ]]; then
-    DISTRO='OSX'
-    IS_MAC=1
-  elif [[ "$OS" == 'SunOS' ]]; then
-    DISTRO='SunOS'
-    IS_SUN=1
-  elif [[ "$OS" == 'Linux' ]]; then
-    IS_LINUX=1
-    if [[ -f /etc/gentoo-release ]]; then
-      DISTRO='Gentoo'
-    elif [[ -f /etc/redhat-release ]]; then
-      DISTRO=`awk '{ print $1 }' /etc/redhat-release`
-    elif [[ -f /etc/debian_version ]]; then
-      DISTRO='Debian'
-    elif [[ -f /etc/lsb*release ]]; then
-      eval `cat /etc/lsb*release`
-      DISTRO=$DISTRIB_ID
+case "$OSTYPE" in
+  darwin*)
+    _is_mac=1
+    if [[ "$_user_groups" == *" admin "* || "$_user_groups" == *" root "* ]]; then
+      _is_admin=1
     fi
-  fi
-
-# In a root-capable group?
-  ROOTGROUP=
-  if [[ $IS_LINUX ]]; then
-    groups | grep 'root\|wheel' &> /dev/null
-    if [[ "$?" == 0 ]]; then
-      ROOTGROUP=1
+    ;;
+  linux*)
+    _is_linux=1
+    if [[ "$_user_groups" == *" wheel "* || "$_user_groups" == *" root "* ]]; then
+      _is_admin=1
     fi
-  elif [[ $IS_MAC ]]; then
-    groups | grep 'root\|admin' &> /dev/null
-    if [[ "$?" == 0 ]]; then
-      ROOTGROUP=1
-    fi
-  fi
-
-# Local X server?
-  LOCAL_X=
-  if [[ $IS_LINUX ]]; then
-    if [[ ':' == "${DISPLAY:0:1}" ]]; then
-      LOCAL_X=1
-    fi
-  elif [[ $IS_MAC ]]; then
-    if [[ '/tmp/launch' == "${DISPLAY:0:11}" ]]; then
-      LOCAL_X=1
-    fi
-  fi
-
-# Get the primary domain for this host (minus any subdomains)
-  if [[ $IS_LINUX ]]; then
-    DOMAIN=`echo \`hostname -d\` | sed -e 's/^.\+\.\([^\.]\+\?\.[^\.]\+\)$/\1/'`
-  elif [[ $IS_MAC ]]; then
-    DOMAIN=`echo \`hostname -f\` | sed -Ee 's/^.+\.([^\.]+\.[^\.]+)$/\1/'`
-  else
-    DOMAIN=
-  fi
+    ;;
+esac
 
 ###############################################################################
-# Define useful functions that things below depend on
-#
-
-# Return the absolute/expanded pathname to the requested file or directory
-  abspath() {
-    dir="$1"
-    file=""
-    if [[ -f "$dir" ]]; then
-      file=/`basename "$dir"`
-      dir=`dirname "$dir"`
-    fi
-    echo `cd "$dir" && pwd -P`"$file"
-  }
-
-#
 # Nice path functions with slight modifications from:
-#
 #   http://stackoverflow.com/questions/370047/what-is-the-most-elegant-way-to-remove-a-path-from-the-path-variable-in-bash
 #
-  append_path()  { NEW=${1/%\//}; [[ -d $NEW ]] || return; remove_path $NEW; export PATH="$PATH:$NEW"; }
-  prepend_path() { NEW=${1/%\//}; [[ -d $NEW ]] || return; remove_path $NEW; export PATH="$NEW:$PATH"; }
-  remove_path()  {
-    # New format not supported by some old versions of awk
-    # PATH=`echo -n "$PATH" | awk -v RS=: -v ORS=: '$0 != "'$1'"'`
-    PATH=`echo -n "$PATH" | awk  'BEGIN { RS=":"; ORS=":" } $0 != "'$1'" '`
-    export PATH=${PATH/%:/}
-  }
 
-
-# Return the first program from the argument list that exists in the execution path
-  find_program() {
-    for file in $*; do
-      if command -v "$file" &>/dev/null; then
-        echo "$file"
-        return
-      fi
-    done
-  }
+append_path()  {
+  local _new=${1/%\//}
+  [[ -d "$_new" ]] || return
+  remove_path "$_new"
+  export PATH="$PATH:$_new"
+}
+prepend_path() {
+  local _new=${1/%\//}
+  [[ -d "$_new" ]] || return
+  remove_path "$_new"
+  export PATH="$_new:$PATH"
+}
+remove_path() {
+  local target=${1%/}
+  # -v passes the variable safely; printf '%s' avoids echo/backslash quirks
+  PATH=$(printf '%s' "$PATH" | awk -v RS=":" -v ORS=":" -v target="$target" '$0 != target')
+  # Remove trailing colon if one remains
+  export PATH=${PATH%:}
+}
 
 ###############################################################################
-# Basic environmental settings/changes that should go everywhere
+# Adjust shell behavior and key bindings
 #
 
-#
-# ANSI colors
-#
+# Set locale settings to UTF-8 for proper handling of non-ASCII characters
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+export LC_COLLATE=C
 
-    ANSI_RESET="\[\033[0m\]"
-    ANSI_BRIGHT="\[\033[1m\]"
-    ANSI_UNDERSCORE="\[\033[4m\]"
+# Like zsh's "setopt interactive_comments": allow # to start a comment on the
+# command line. (Requires bash 5.1+; ignore it on older shells.)
+shopt -s interactive_comments 2>/dev/null
 
-    FG_BLACK="\[\033[0;30m\]"
-    FG_BLUE="\[\033[0;34m\]"
-    FG_GREEN="\[\033[0;32m\]"
-    FG_CYAN="\[\033[0;36m\]"
-    FG_RED="\[\033[0;31m\]"
-    FG_MAGENTA="\[\033[0;35m\]"
-    FG_BROWN="\[\033[0;33m\]"
-    FG_LIGHTGRAY="\[\033[0;37m\]"
-    FG_DARKGRAY="\[\033[1;30m\]"
-    FG_LIGHTBLUE="\[\033[1;34m\]"
-    FG_LIGHTGREEN="\[\033[1;32m\]"
-    FG_LIGHTCYAN="\[\033[1;36m\]"
-    FG_LIGHTRED="\[\033[1;31m\]"
-    FG_LIGHTMAGENTA="\[\033[1;35m\]"
-    FG_YELLOW="\[\033[1;33m\]"
-    FG_WHITE="\[\033[1;37m\]"
+# Like zsh's "setopt no_banghist": disable ! history expansion
+set +H
 
-    BG_BLACK="\[\033[40m\]"
-    BG_RED="\[\033[41m\]"
-    BG_GREEN="\[\033[42m\]"
-    BG_BROWN="\[\033[43m\]"
-    BG_BLUE="\[\033[44m\]"
-    BG_PURPLE="\[\033[45m\]"
-    BG_CYAN="\[\033[46m\]"
-    BG_WHITE="\[\033[47m\]"
+# Like zsh's "unsetopt ignoreeof": allow Ctrl-D to log out.
+set +o ignoreeof
 
-#
-# Commandline setup
-#
+# Enable spellchecking/guessing for cd commands (useful for typo'd pathnames)
+shopt -s cdspell
 
-# Colorize and customize the sudo prompt
-  alias sudo='sudo -p "`echo -e '\''\033[33msudo \033[1;31m%U\033[0;33m password for \033[0;34m%u\033[36m@\033[34m%h\033[0m: \033[0m'\''` "'
+# Like zsh's "setopt correct": guess/correct misspelled commands (not just cd).
+# (Requires bash 5.1+; ignore it on older shells.)
+shopt -s spellcheck 2>/dev/null
 
-# Change PROMPT_COMMAND so that it will update window/tab titles automatically
-  if [[ $IS_LINUX || $IS_MAC || $IS_SUN ]]; then
-    case "$TERM" in
-      xterm*|rxvt|Eterm|eterm|linux)
-        PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\007"'
-        ;;
-      screen)
-        PROMPT_COMMAND='echo -ne "\033_${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\033\\"'
-        ;;
-    esac
-  fi
+# Store multi-line commands as one line in the history
+shopt -s cmdhist
 
-# Redraw the prompt to a better look.  Red for Root (EUID zero)
-  if [[ $EUID == 0 ]]; then
-    PS1="${FG_RED}\u${FG_LIGHTRED}@\h${ANSI_RESET}: ${FG_GREEN}\w ${FG_LIGHTRED}#${ANSI_RESET} "
-  else
-    PS1="${FG_BLUE}\u${FG_CYAN}@${FGBLUE}\h${ANSI_RESET}: ${FG_GREEN}\w ${FG_DARKGRAY}>${ANSI_RESET} "
-  fi
+# Turn on checkwinsize so we get $LINES and $COLUMNS
+shopt -s checkwinsize
 
-# Allow control-D to log out
-  unset ignoreeof
-
-# Enable hist-append
-  shopt -s histappend
-
-# History length
-  export HISTFILESIZE=100000
-  export HISTSIZE=200000
+# History configuration
+shopt -s histappend
+export HISTFILESIZE=100000
+export HISTSIZE=200000
 
 # Give the time in the history file
-  export HISTTIMEFORMAT="%F %T "
-
+export HISTTIMEFORMAT="%F %T "
 # Ignore duplicate history entries and those starting with whitespace
-  export HISTCONTROL=ignoreboth
-
+export HISTCONTROL=ignoreboth
 # Prevent certain commands from cluttering the history
-  export HISTIGNORE="&:l:ls:ll:[bf]g:clear:exit:history:history *:history|*:cd:cd -:df"
+export HISTIGNORE="&:l:ls:ll:[bf]g:clear:exit:history:history *:history|*:cd:cd -:df"
 
 # Update the bash history after every command rather then the end of the session
-if [[ "${PROMPT_COMMAND}" == *\; ]]
-then
+if [[ "${PROMPT_COMMAND}" == *\; ]]; then
   export PROMPT_COMMAND="${PROMPT_COMMAND} history -a"
-elif [[ -n "${PROMPT_COMMAND}" ]]
-then
+elif [[ -n "${PROMPT_COMMAND}" ]]; then
   export PROMPT_COMMAND="${PROMPT_COMMAND}; history -a"
 else
   export PROMPT_COMMAND="history -a"
 fi
 
-# Enable spellchecking/guessing for cd commands (useful for typo'd pathnames)
-  shopt -s cdspell
+# Enable color for gnu tools
+export CLICOLOR=1
 
-# Store multi-line commands as one line in the history
-  shopt -s cmdhist
+# Instruct less to render nerdfonts directly
+export LESSUTFCHARDEF="E000-F8FF:p,F0000-FFFFD:p,100000-10FFFD:p"
 
-# Turn on checkwinsize so we get $LINES and $COLUMNS
-  shopt -s checkwinsize
+# Default less to color rendering, case-insensitive search, and auto-exit for short files
+export LESS="-R -i -F"
 
-#
-# Update the search path with some more directories
-#
-
-  if [[ $ROOTGROUP ]]; then
-    for dir in \
-        /usr/*/sbin/           \
-        /opt/*/sbin/           \
-        /usr/lib/courier/*sbin \
-        ; do
-      prepend_path "$dir"
-    done
-    prepend_path /usr/sbin
-    prepend_path /sbin
-  fi
-
-  append_path ~/bin
-  append_path ~/scripts
-  for dir in \
-      /usr/*/bin/           \
-      /opt/*/bin/           \
-      /usr/java/*/bin/      \
-      ; do
-    prepend_path "$dir"
-  done
-
-  prepend_path ~/.local/bin
-
-#
-# Now that we have altered $PATH, make a few other environment-specific tweaks
-#
-
-# Use gnu utilities if they're available
-  if [[ $IS_SUN || $IS_MAC ]]; then
-    for APP in grep find tar sed xargs; do
-      if command -v g$APP &> /dev/null; then
-        alias $APP=g$APP
-      fi
-    done
-  fi
-
-#
-# Setup Grep
-#
-  export GREP_OPTIONS=
-
-# Ignore certain directory patterns
-  export GREP_OPTIONS="--exclude-dir=.svn $GREP_OPTIONS"
-  export GREP_OPTIONS="--exclude-dir=.git $GREP_OPTIONS"
-  export GREP_OPTIONS="--exclude-dir=CVS $GREP_OPTIONS"
-
-# Turn on grep colorization
-  export GREP_OPTIONS="--color=auto $GREP_OPTIONS"
-  # export GREP_COLORS='mt=0;32'
-
-  # Apply the options without using the now-deprecated env var
-  if command -v ggrep &> /dev/null; then
-    alias grep="ggrep $GREP_OPTIONS"
+# Default tools
+export EDITOR=vim
+if command -v batcat &> /dev/null; then
+  export PAGER="batcat"
+  export MANPAGER="batcat -l man -p"
+elif command -v bat &> /dev/null; then
+  export PAGER="bat"
+  if command -v batman &> /dev/null; then
+    eval "$(batman --export-env)"
+  elif [[ $_is_mac ]]; then
+    # macOS mandoc needs extra help to avoid random control characters in the output
+    # See https://github.com/sharkdp/bat/discussions/3027
+    export MANPAGER="sh -c 'col -bx | bat -l man -p'"
   else
-    alias grep="grep $GREP_OPTIONS"
+    export MANPAGER="bat -l man -p"
   fi
-  export GREP_OPTIONS=
-
-# Prepare the ls color options
-  if [[ $IS_MAC ]]; then
-    export CLICOLOR=1
-  else
-    export CLICOLOR=true
-  fi
-  for file in /etc/DIR_COLORS ~/.dir_colors; do
-    if [[ -f "$file" ]]; then
-      eval `dircolors -b $file`
-    fi
-  done
-  if [[ $IS_MAC ]]; then
-      LS_OPTIONS='-G -v'
-  elif [[ $IS_LINUX ]]; then
-      LS_OPTIONS='-v --color=auto --show-control-chars'
-  else
-      LS_OPTIONS=
-  fi
-
-#
-# Other settings specific to the OS
-#
-
-# Linux and Solaris settings
-  if [[ $IS_LINUX || $IS_SUN ]]; then
-
-  # Update JAVA_HOME, too
-    JAVA_HOME="`dirname \`dirname \\\`command -v java2 2>/dev/null\\\` 2>/dev/null\` 2>/dev/null`"
-
-    export LC_ALL=$LANG
-
-  #Export proper case-sensitive language sorting
-    export LC_COLLATE=C
-
-
-  # Preferred editor settings
-    export EDITOR=`find_program vim vi nano`
-
-  # Preferred pager
-    export PAGER=`find_program less more cat`
-
-  # Python-preferred browser
-    export BROWSER=`find_program firefox mozilla iceweasel elinks lynx`
-
-# Mac settings
-  elif [[ $IS_MAC ]]; then
-
-  # Preferred editor settings
-    export EDITOR=vim
-
-  # Preferred pager
-    export PAGER=less
-
-  fi
-
-###############################################################################
-# Things very specific to MacOS
-#
-
-if [[ $IS_MAC ]]; then
-
-# Turn on bash-completion for macs
-  if command -v brew > /dev/null; then
-    for file in \
-      $(brew --prefix)/etc/bash_completion \
-      $(brew --prefix)/etc/bash_completion.d/brew
-    do
-      [[ -f "$file" ]] && source "$file"
-    done
-  fi
-
+else
+  export PAGER="less"
 fi
 
 ###############################################################################
-# Execute any environment-specific bashrc files
+# Extend the path
 #
 
-# Get the location (useful for home vs. work separation)
-  LOCATION=`echo "$DOMAIN" | awk -F. '{ print $1 }'`
+if [[ $_is_admin ]]; then
+  for dir in \
+      /usr/*/sbin/ \
+      /opt/*/sbin/ \
+      ; do
+    prepend_path "$dir"
+  done
+  prepend_path /usr/sbin
+  prepend_path /sbin
+fi
 
-# Load any custom extensions
-  if [[ -d ~/.bashrc.d ]]; then
-    for file in ~/.bashrc.d/*; do
-      if [[ -d "$file" ]]; then
-        continue
-      elif [[ ${file:$((${#file}-9)):9} == '.disabled' ]]; then
-        continue
-      elif [[ ${file:$((${#file}-4)):4} == '.loc' ]]; then
-        if [[ $file == ~/.bashrc.d/"$LOCATION".loc ]]; then
-          source "$file"
-        fi
-      elif [[ ${file:$((${#file}-7)):7} == '.notloc' ]]; then
-        if [[ $file != ~/.bashrc.d/"$LOCATION".notloc ]]; then
-          source "$file"
-        fi
-      else
-        source "$file"
+for dir in \
+    /usr/*/bin/ \
+    /opt/*/bin/ \
+    /usr/java/*/bin/ \
+    ; do
+  prepend_path "$dir"
+done
+
+# My user directories, at the front of PATH (in this priority order:
+# ~/.local/bin, ~/bin, ~/scripts). Prepended in reverse because prepend_path
+# puts each entry at the front.
+prepend_path ~/scripts
+prepend_path ~/bin
+prepend_path ~/.local/bin
+
+if [[ -d "$HOME/go" ]]; then
+  export GOPATH="${GOPATH:+$GOPATH:}$HOME/go"
+  [[ -d "$HOME/go/bin" ]] && append_path "$HOME/go/bin"
+fi
+
+# Added by LM Studio CLI (lms)
+if [[ -d "$HOME/.lmstudio/bin" ]]; then
+  append_path "$HOME/.lmstudio/bin"
+fi
+
+###############################################################################
+# GNU utilities
+#
+
+# Use gnu utilities if they're available
+if [[ $_is_mac ]]; then
+  _init_gnu_utils() {
+    local _app
+    # Note: grep is handled separately below.
+    for _app in find tar sed xargs; do
+      local _gnu_app="g$_app"
+      if command -v $_gnu_app &> /dev/null; then
+        alias -- "$_app=$_gnu_app"
       fi
     done
+  }
+  _init_gnu_utils
+  unset -f _init_gnu_utils
+fi
+
+_init_grep_alias() {
+  # Note: this list should be kept in sync with the values in .ripgreprc
+  local -a exclude_files=(
+    ".DS_Store"
+  )
+  local -a exclude_dirs=(
+    # Version Control & IDEs
+    ".git"
+    ".idea"
+    ".svn"
+    "CVS"
+    # Python & Environments
+    "__pycache__"
+    ".venv"
+    "node_modules"
+    # Caches
+    ".cache"
+    ".direnv"
+    ".*_cache"
+  )
+
+  # Convert the array into repeated exclude flags programmatically
+  local -a grep_options=("--color=auto")
+  local _file _dir
+  for _file in "${exclude_files[@]}"; do
+    grep_options+=("--exclude='$_file'")
+  done
+  for _dir in "${exclude_dirs[@]}"; do
+    grep_options+=("--exclude-dir='$_dir'")
+  done
+
+  # Check for GNU grep, fallback to standard grep
+  local grep_cmd="grep"
+  if command -v ggrep &>/dev/null; then
+    grep_cmd="ggrep"
   fi
 
-# And finally even more, just in case
-  [[ -f ~/.bashrc_custom ]] && source ~/.bashrc_custom
+  # In bash, use [*] to expand all array elements joined by spaces
+  alias grep="$grep_cmd ${grep_options[*]}"
+}
+_init_grep_alias
+unset -f _init_grep_alias
 
-# Init some NVM stuff
-  # export NVM_DIR="$HOME/.nvm"
-  # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  # [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# Ensure the deprecated environment variable is unset
+unset GREP_OPTIONS
+
+###############################################################################
+# Initialize homebrew
+#
+
+typeset _brew=""
+
+# Find the Homebrew binary without spawning subshells for standard paths
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  _brew="/opt/homebrew/bin/brew"
+elif [[ -x /usr/local/bin/brew ]]; then
+  _brew="/usr/local/bin/brew"
+elif command -v brew &> /dev/null; then
+  _brew=$(command -v brew)
+fi
+
+if [[ -n "$_brew" ]]; then
+  # Set Homebrew's environment variables (HOMEBREW_PREFIX, HOMEBREW_CELLAR,
+  # MANPATH) and add its bin/sbin directories to PATH.
+  eval "$("$_brew" shellenv)"
+
+  # Suppress homebrew's "Installing/Removing ..." environment hints
+  export HOMEBREW_NO_ENV_HINTS=1
+
+  # Installed brew cask programs bypass the "downloaded from the internet" warning
+  export HOMEBREW_CASK_OPTS="--no-quarantine"
+
+  # Load bash completions shipped with the bash-completion formula
+  if [[ -f "$HOMEBREW_PREFIX/etc/bash_completion" ]]; then
+    source "$HOMEBREW_PREFIX/etc/bash_completion"
+  fi
+
+  # Homebrew python
+  append_path "$HOMEBREW_PREFIX/opt/python/libexec/bin"
+fi
+
+unset _brew
+
+###############################################################################
+# User functions and additional configuration
+#
+
+# Load zsh functions
+if [ -d "$HOME"/.zsh/functions ]; then
+  for file in "$HOME"/.zsh/functions/*; do
+    [ -f "$file" ] && [ -r "$file" ] || continue
+
+    func_name="${file##*/}" # basename
+
+    # Ignore dotfiles (e.g., .DS_Store, .gitkeep) and compiled Zsh files
+    [[ "$func_name" == .* || "$func_name" == *.zwc ]] && continue
+
+    # Replace 'bash' with 'zsh' if the files use Zsh-specific syntax
+    eval "${func_name}() { bash \"${file}\" \"\$@\"; }"
+  done
+fi
+
+# Load any custom extensions
+if [[ -d ~/.bashrc.d ]]; then
+  for file in ~/.bashrc.d/*.sh; do
+    if [[ -d "$file" ]]; then
+      continue
+    fi
+    source "$file"
+  done
+fi
+
+###############################################################################
+# Cleanup temporary variables
+#
+
+unset _is_mac _is_linux _is_admin _user_groups
+unset -f prepend_path
+unset -f append_path
+unset -f remove_path
+
+###############################################################################
+# Additional config for external programs
+#
+
+# Use my global ripgrep config (hidden files, exclusions, etc.)
+export RIPGREP_CONFIG_PATH="$HOME/.ripgreprc"
+
+# Activate iterm2 shell integration
+if [[ -e "$HOME/.iterm2_shell_integration.bash" ]]; then
+  source "$HOME/.iterm2_shell_integration.bash"
+else
+  printf "\033[1;91m⚠️  No iTerm2 integration. \033[0;33mPlease install via iTerm2 menu.\033[0m\n"
+fi
+
+# Initialize mise before direnv
+if [[ $(command -v mise) ]]; then
+  eval "$(mise activate bash)"
+fi
 
 # init direnv
-  if [[ $(command -v direnv) ]]; then
-    eval "$(direnv hook bash)"
-  fi
+if [[ $(command -v direnv) ]]; then
+  eval "$(direnv hook bash)"
+fi
 
-# Lastly, init iterm2 shell integration
-  if [[ -e "${HOME}/.iterm2_shell_integration.bash" ]]; then
-      source "${HOME}/.iterm2_shell_integration.bash"
+# Init starship
+if [[ $(command -v starship) ]]; then
+  eval "$(starship init bash)"
+else
+  # Declare temporary formatting variables to keep them out of the final environment
+  typeset c_red c_lred c_green c_blue c_cyan c_dgray c_reset
+  typeset esc osc bel st_seq title_fmt
+
+  # Define readable escape code building blocks
+  esc="\033"        # ESC character
+  osc="${esc}]0;"   # Operating System Command (Window/Tab title start)
+  bel="\007"        # Bell character (OSC terminator)
+  apc="${esc}_"     # Application Program Command (Screen/tmux internal title start)
+  st_seq="${esc}\\" # String Terminator (APC terminator)
+
+  # Format string for user@host:path
+  title_fmt="%s@%s:%s"
+
+  # 1. Update window/tab titles automatically based on terminal type
+  case "$TERM" in
+    xterm*|rxvt|Eterm|eterm|linux)
+      # Sets outer terminal window/tab title: OSC 0; title BEL
+      PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }printf \"${osc}${title_fmt}${bel}\" \"\${USER}\" \"\${HOSTNAME%%.*}\" \"\${PWD/#\$HOME/~}\""
+      ;;
+    screen*|tmux*)
+      # Sets both multiplexer internal title (APC ... ST) and outer terminal title (OSC 0 ... BEL)
+      PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND; }printf \"${apc}${title_fmt}${st_seq}${osc}${title_fmt}${bel}\" \"\${USER}\" \"\${HOSTNAME%%.*}\" \"\${PWD/#\$HOME/~}\" \"\${USER}\" \"\${HOSTNAME%%.*}\" \"\${PWD/#\$HOME/~}\""
+      ;;
+  esac
+
+  # 2. Set ANSI colors safely (respecting NO_COLOR standards)
+  if [[ -z "${NO_COLOR:-}" ]]; then
+    c_red="\[\e[31m\]"
+    c_lred="\[\e[91m\]"
+    c_green="\[\e[32m\]"
+    c_blue="\[\e[34m\]"
+    c_cyan="\[\e[36m\]"
+    c_dgray="\[\e[90m\]"
+    c_reset="\[\e[0m\]"
   else
-      echo "No iterm integration.  Please install via iTerm2 menu"
+    c_red="" c_lred="" c_green="" c_blue="" c_cyan="" c_dgray="" c_reset=""
   fi
 
+  # 3. Apply prompt based on privileges (Red for Root, Blue/Cyan for standard users)
+  if [[ $EUID == 0 ]]; then
+    PS1="${c_red}\u${c_lred}@\h${c_reset}: ${c_green}\w ${c_lred}#${c_reset} "
+  else
+    PS1="${c_blue}\u${c_cyan}@\h${c_reset}: ${c_green}\w ${c_dgray}>${c_reset} "
+  fi
+
+  # 4. Clean up all temporary variables so they leave zero footprint in your shell
+  unset c_red c_lred c_green c_blue c_cyan c_dgray c_reset
+  unset esc osc bel apc st_seq title_fmt
+fi

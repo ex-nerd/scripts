@@ -1,11 +1,10 @@
 [user]
     name = Chris Petersen
+    signingkey = ~/.ssh/id_ed25519.pub
 [core]
     whitespace=fix,-indent-with-non-tab,trailing-space,cr-at-eol
     excludesfile = ~/.gitignore_global
     pager = delta
-# [http]
-#     sslVerify = false
 [init]
     defaultBranch = main
 [gpg]
@@ -114,3 +113,5 @@
     line-numbers-right-style = 'deepskyblue'
     # kill switch for color-moved support (it looks like crap)
     inspect-raw-lines = false
+[tag]
+    gpgsign = true

@@ -1,170 +1,191 @@
-#!/usr/bin/env brew bundle install
+#!/usr/bin/env brew bundle upgrade --file
 # Yes, that shebang is magic.  Just execute this file via ./Brewfile to make it work.
+#
+# Don"t forget to set HOMEBREW_CASK_OPTS="--no-quarantine"
 
-# Lots of helpful setup info here: https://openfolder.sh/macos-migrations-with-brewfile
+# Lots of helpful setup info here: https://thebiglog.com/posts/macos-migrations-with-brewfile
 
-tap 'homebrew/cask'
-tap 'homebrew/cask-versions'
-tap 'mas-cli/tap'
-tap 'homebrew/cask-fonts'
+###############################################################################
+# Taps and Setup
+
+# No taps are currently used.
 
 # For mac app store stuff (including later in this file)
-brew 'mas'
+brew "mas"
 
-# Core stuff
-brew 'coreutils'
-brew 'gnu-sed'  # --with-default-names
-brew 'findutils'  # --with-default-names
-brew 'grep'  # --with-default-names
-brew 'progress'  # https://github.com/Xfennec/progress
-brew 'direnv'
-brew 'pv'
-#brew 'tee'  # No brew for this (it's built-in)
-brew 'pwgen'
-
-brew 'git'
-brew 'git-lfs'
-brew 'hub'  # "unofficial" github client, mimics git: https://hub.github.com/
-brew 'gh'   # official github client: https://cli.github.com/
-brew 'bash'
-brew 'bash-completion'
-brew 'wget'
-brew 'colordiff'
-
-brew 'pyenv'
-brew 'zlib'  # for pyenv until BigSur issues are fixed
-brew 'bzip2'  # for pyenv until BigSur issues are fixed
-# FIXME: figure out how to run this via brew?
-# $(brew --prefix)/bin/pip install virtualenvwrapper ipython
-
-brew 'imagemagick'
-
-brew 'libdvdcss'
-brew 'mp4v2'
-brew 'gpac'
-
-brew 'ssh-copy-id'
-brew 'rename'
-
-brew 'html-xml-utils'
-
-brew 'hugo'
-brew 'tree'
-
-# 3d printer stuff
-cask 'bossa'
-
-# Better than Apple's built-in one
-brew 'nano'
-
-# for json parsing via bash
-brew 'jq'
-
-# for photorec, memory card un-deleter
-brew 'testdisk'
-
-# Install Mac App Store apps first, since we prefer these over casks
-
-mas 'Better Rename 9', id: 414209656
-mas 'Deliveries', id: 924726344
-mas 'Fantastical', id: 975937182
-mas 'Gemini 2', id: 1090488118
-mas 'PCalc', id: 403504866
-mas 'Pixelmator Pro', id: 1289583905
-mas 'Slack', id: 803453959
-mas 'SSH Tunnel Manager', id: 424470626
-mas 'Textual 7', id: 1262957439
-mas 'The Unarchiver', id: 425424353
-# mas 'Xcode', id: 497799835 # Don't really need xcode everywhere
-
-# mas 'Final Cut Pro', id: 424389933
-# mas 'iMovie', id: 408981434
-# mas 'Motion', id: 434290957
-# mas 'Compressor', id: 424390742
-# mas 'RBdigital', id: 491365225
-# mas 'Keynote', id: 409183694
-# mas 'Numbers', id: 409203825
-# mas 'Pages', id: 409201541
-# mas 'Wimoweh', id: 610341008
-# mas 'Moom', id: 419330170
-# mas 'Witch', id: 412485838
-# mas 'CleanMyDrive 2', id: 523620159
-# mas 'Sugarmate Glance', id: 1207352056
-
+###############################################################################
 # Fonts
 
-cask 'font-hack'
-cask 'font-fira-code'
-cask 'font-monoid'
-cask 'font-source-code-pro'
-# for seagl program
-cask 'font-dosis'
+# for old versions of the seagl program
+# cask "font-dosis"
 
-# List of all cask apps (truncated by github display):
-# https://github.com/caskroom/homebrew-cask/tree/master/Casks
-# Search via: `brew search --casks`
+# No nerd font available for the plain MDI font
+cask "font-material-icons"
 
-cask 'imageoptim'
-cask 'imagealpha'
-cask 'handbrake'
-cask 'makemkv'
-cask 'vlc'
-cask 'plex'
-cask 'steam'
+# Nerd fonts
+cask "font-hack-nerd-font"
+cask "font-meslo-lg-nerd-font"
+cask "font-sauce-code-pro-nerd-font"
+cask "font-source-code-pro"
+cask "font-monoid-nerd-font"
+cask "font-fira-code-nerd-font"
 
-cask 'tor-browser'
 
-#cask '1password-cli'
+###############################################################################
+# Core shell environment
 
-# cask 'bettertouchtool' # prefer to manage manually
-# cask 'iterm2-beta' # prefer to manage manually
+brew "bash"
+brew "bash-completion"
 
-# cask 'prusaslicer' # prefer to install manually for betas
-cask 'openscad-snapshot'
-cask 'meshlab'
-cask 'meshmixer'
+brew "starship"
 
-cask 'discord'
-# cask 'openemu' # exists but I don't want it at the moment
+brew "coreutils"
+brew "gnu-sed"  # --with-default-names
+brew "findutils"  # --with-default-names
+brew "grep"  # --with-default-names
+brew "rsync"
+brew "wget"
+brew "ssh-copy-id"
 
-cask 'xquartz'
-cask 'inkscape'
-cask 'libreoffice'
+brew "pwgen"
+brew "rename"
+brew "dos2unix"
 
-cask 'visual-studio-code'
-cask 'sublime-text'
+brew "bat"
+brew "bat-extras"
+brew "lsd"
+brew "ripgrep"
+brew "btop"
 
-# This includes the betterzipql plugin, too
-# The app itself is shareware, and Unarchiver is free/easy but no QL plugin
-#cask 'betterzip'
+###############################################################################
+# Coding
 
-# This includes an app and an installer-package ql plugin
-# https://www.mothersruin.com/software/SuspiciousPackage/
-cask 'suspicious-package'
+# Run LLMs with MLX using uv tool, not homebrew:
+# uv tool install --with torch rapid-mlx --force
+# uv tool install --with jinja2 mlx-vlm --force
 
-# Great list of QL plugins via https://github.com/sindresorhus/quick-look-plugins
-# See also https://www.quicklookplugins.com/
-cask 'ProvisionQL'
-cask 'qlcolorcode'
-cask 'qlstephen'
-cask 'qlmarkdown'
-cask 'quicklook-json'
-cask 'qlprettypatch'
-cask 'quicklook-csv'
-cask 'qlimagesize'
-cask 'webpquicklook'
-cask 'quicklookase'
-cask 'qlvideo'
-#  sad..  no longer available: cert-quicklook
+# Version Control
+brew "subversion"
+brew "git"
+brew "git-lfs"
+brew "git-delta"
+brew "gh"   # official github client: https://cli.github.com/
+# brew "hub"  # "unofficial" github client, mimics git: https://hub.github.com/
 
-# Run these to silence warnings about quicklook plugins
-# xattr -cr ~/Library/QuickLook/QLColorCode.qlgenerator/
-# xattr -cr ~/Library/QuickLook/QLStephen.qlgenerator/
-# xattr -cr ~/Library/QuickLook/QLMarkdown.qlgenerator/
+# IDEs and editors
+cask "visual-studio-code"
+cask "sublime-text"
+brew "nano"
+
+# Developer virtual environments
+brew "direnv"
+brew "mise"
+brew "uv"
+brew "pipx"
+
+# Developer tools
+brew "ansible"
+brew "black"
+brew "colordiff"
+brew "hugo"
+brew "jq"
+brew "prettier"
+brew "qrencode"
+brew "shellcheck"
+brew "sqlite"
+
+###############################################################################
+# Audio, Video, and other media
+
+# cask "handbrake"
+# cask "makemkv"
+brew "ffmpeg"
+cask "vlc"
+cask "plex"
+brew "imagemagick"
+brew "exiftool"
+brew "imageoptim-cli"
+brew "pngquant"
+
+brew "libdvdcss"
+brew "mp4v2"
+brew "gpac" #formerly known as mp4box
+
+# for photorec, memory card un-deleter
+# brew "testdisk"
+
+###############################################################################
+# Mac App Store and Other Desktop Apps
+
+# Interior design application
+cask "sweet-home3d"
+
+# Menu bar app for USB-C cable diagnostics
+# I prefer to use it from linux
+#cask "whatcable"
+
+# Menu bar calendar
+cask "itsycal"
+
+# System cleaner, optimiser, and malware scanner
+cask "mac-sai"
+
+# Voice and text chat software
+cask "discord"
+
+# Tor…
+cask "tor-browser"
+
+# Free cross-platform office suite, fresh version
+# cask "libreoffice"
+
+# Browser plugins
+# mas "1Password for Safari", id: 1569813296
+mas "uBlock Origin Lite", id: 6745342698
+mas "Privacy Badger", id: 0
+mas "Tab for a Cause", id: 1579749108
+
+mas "GeoTag", id: 1465180184
+mas "PCalc", id: 403504866
+
+mas "Gemini 2", id: 1090488118 # duplicate finder
+mas "OpenIn", id: 1643649331
+mas "RenameNinja", id: 6745643774
+mas "ShellHistory", id: 1564015476
+mas "The Unarchiver", id: 425424353
+
+# Windows Remote Desktop
+# mas "Windows App", id: 1295203466
+
+# Developer stuff I want to manage manually
+# mas "Blackmagic Disk Speed Test", id: 425264550
+# mas "LightBlue", id: 557428110 # bluetooth scanner
+# mas "Discovery", id: 1381004916 # Bonjour Browser
+# mas "TestFlight", id: 899247664
+# mas "Xcode", id: 497799835
+
+# 3D and CAD
+cask "openscad@snapshot"
+# cask "meshlab"
+# cask "meshmixer"
+
 # And OpenSCAD
 # xattr -cr /Applications/OpenSCAD.app/
 
-# for https://github.com/alex20465/deskbluez
-# commented out because deskbluez doesn't run
-# brew glib
-# brew dlib
+###############################################################################
+# Quicklook Plugins (and related apps)
+
+# This includes an app and an installer-package ql plugin
+# https://www.mothersruin.com/software/SuspiciousPackage/
+cask "suspicious-package"
+
+# Great list of QL plugins via https://github.com/sindresorhus/quick-look-plugins
+# See also https://www.quicklookplugins.com/
+cask "provisionql"
+cask "qlmarkdown"
+cask "quicklook-video"
+cask "syntax-highlight"
+
+# Run these to silence warnings about quicklook plugins
+# xattr -cr ~/Library/QuickLook/*
+
